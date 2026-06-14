@@ -1,112 +1,163 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { motion } from "framer-motion";
+import { ArrowRight, Clock, Scissors } from "lucide-react";
 import { useServices } from "@/hooks/useBooking";
-import { Scissors } from "lucide-react";
 
 export default function ServiceCards() {
   const { data: services, isLoading } = useServices();
-
-  // Display top 3 services for homepage
-  const displayServices = services?.slice(0, 3) || [];
+  const displayServices = services?.slice(0, 4) || [];
 
   return (
-    <section className="py-14 md:py-24 px-4 md:px-8 max-w-7xl mx-auto" id="services">
-      {/* Section header */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.8 }}
-        className="text-center mb-10 md:mb-16"
-      >
-        <span className="font-[family-name:var(--font-raleway)] text-[10px] uppercase tracking-[0.25em] text-[#8B0000] font-bold mb-3 block">
-          Our Offerings
-        </span>
-        <h2 className="font-[family-name:var(--font-cormorant)] text-3xl md:text-5xl text-[#111111] mb-3 font-semibold leading-tight">
-          Curated Services
-        </h2>
-        <div className="w-16 h-px bg-[#D4AF37] mx-auto mb-4" />
-        <p className="text-[#5A5A5A] max-w-xs md:max-w-xl mx-auto text-sm md:text-base font-light leading-relaxed">
-          Elevating your personal style through precision techniques and premium products.
-        </p>
-      </motion.div>
-
-      {/* Cards */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-56 md:h-72 rounded-2xl bg-white/50 animate-pulse border border-[#E6E0DA]" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-          {displayServices.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, delay: index * 0.08 }}
+    <section className="luxury-shell px-4 py-12 md:px-8 md:py-18" id="services">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7 }}
+          className="mb-7 flex flex-col justify-between gap-4 md:mb-9 md:flex-row md:items-end"
+        >
+          <div className="max-w-2xl">
+            <span
+              className="mb-2 block font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.24em]"
+              style={{ color: "var(--accent-text)" }}
             >
-              <GlassCard className="p-5 md:p-8 hover:scale-[1.02] hover:shadow-[0_16px_36px_rgba(139,0,0,0.08)] transition-all duration-500 ease-out cursor-pointer group relative overflow-hidden h-full flex flex-col bg-white border-[#E6E0DA]">
-                <div className="absolute top-0 right-0 w-28 h-28 bg-[#D4AF37]/5 rounded-full blur-3xl -mr-8 -mt-8 pointer-events-none group-hover:bg-[#D4AF37]/15 transition-colors duration-700" />
+              Signature Services
+            </span>
+            <h2
+              className="font-[family-name:var(--font-cormorant)] text-4xl font-semibold leading-tight md:text-5xl"
+              style={{ color: "var(--text)" }}
+            >
+              Precision, color, and finish.
+            </h2>
+          </div>
+          <p
+            className="max-w-md text-sm leading-relaxed md:text-[15px]"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Compact, curated treatments using professional products and exacting salon technique.
+          </p>
+        </motion.div>
 
-                <div className="flex justify-between items-start mb-4 md:mb-6">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#8B0000]/5 flex items-center justify-center text-[#8B0000] group-hover:bg-gradient-to-br group-hover:from-[#8B0000] group-hover:to-[#5C0000] group-hover:text-white transition-all duration-500 shadow-sm">
-                    <Scissors className="w-4 h-4 md:w-5 md:h-5" />
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-44 animate-pulse rounded-xl"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {displayServices.map((service, index) => (
+              <motion.article
+                key={service.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.55, delay: index * 0.06 }}
+                className="luxury-card group flex min-h-[190px] flex-col rounded-xl p-4 transition-all duration-300 hover:-translate-y-1"
+                style={{ cursor: "pointer" }}
+              >
+                {/* Top row */}
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div
+                    className="flex h-9 w-9 items-center justify-center rounded-md transition-colors duration-300"
+                    style={{
+                      background: "rgba(139,0,0,0.10)",
+                      border: "1px solid rgba(139,0,0,0.14)",
+                      color: "var(--primary)",
+                    }}
+                  >
+                    <Scissors className="h-4 w-4" />
                   </div>
-                  <span className="font-[family-name:var(--font-raleway)] text-[9px] font-bold text-[#D4AF37] uppercase tracking-wider bg-[#D4AF37]/10 px-2.5 py-1 rounded-full">
+                  <span
+                    className="rounded-md px-2 py-1 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.16em]"
+                    style={{
+                      background: "rgba(139,0,0,0.06)",
+                      border: "1px solid rgba(139,0,0,0.12)",
+                      color: "var(--primary)",
+                    }}
+                  >
                     {service.tag || "Signature"}
                   </span>
                 </div>
 
-                <h3 className="font-[family-name:var(--font-cormorant)] text-xl md:text-2xl text-[#111111] mb-2 md:mb-3 group-hover:text-[#8B0000] transition-colors font-semibold leading-tight">
+                {/* Name */}
+                <h3
+                  className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold leading-none transition-colors duration-300"
+                  style={{ color: "var(--text)" }}
+                >
                   {service.name}
                 </h3>
 
-                <p className="text-[#5A5A5A] mb-4 md:mb-6 flex-grow text-xs md:text-sm font-light leading-relaxed line-clamp-2 md:line-clamp-3">
-                  {service.description || "Experience luxury styling tailored to your unique essence and lifestyle."}
+                {/* Description */}
+                <p
+                  className="mt-2 line-clamp-2 flex-grow text-xs leading-relaxed"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {service.description || "A tailored salon ritual designed for polished, lasting results."}
                 </p>
 
-                <div className="flex items-center justify-between border-t border-[#E6E0DA] pt-3 md:pt-4 mt-auto">
-                  <div className="flex flex-col">
-                    <span className="font-[family-name:var(--font-cormorant)] text-[#111111] text-lg md:text-xl font-semibold">
-                      {service.currency === 'INR' ? '₹' : service.currency}{parseFloat(service.price).toLocaleString()}
-                    </span>
-                    <span className="font-[family-name:var(--font-raleway)] text-[9px] text-[#5A5A5A] uppercase tracking-wider">{service.duration_minutes} min</span>
+                {/* Footer */}
+                <div
+                  className="mt-4 flex items-end justify-between pt-3"
+                  style={{ borderTop: "1px solid var(--border)" }}
+                >
+                  <div>
+                    <div
+                      className="font-[family-name:var(--font-cormorant)] text-xl font-semibold leading-none"
+                      style={{ color: "var(--text)" }}
+                    >
+                      {service.currency === "INR" ? "Rs. " : service.currency}
+                      {parseFloat(service.price).toLocaleString()}
+                    </div>
+                    <div
+                      className="mt-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
+                      style={{ color: "var(--text-subtle)" }}
+                    >
+                      <Clock className="h-3 w-3" />
+                      {service.duration_minutes} min
+                    </div>
                   </div>
                   <Link
                     href="/booking"
-                    className="flex items-center gap-1 bg-[#8B0000] text-white text-[9px] md:text-[10px] uppercase tracking-wider font-bold px-3 py-2 rounded-full hover:bg-[#5C0000] transition-colors duration-300"
+                    className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--primary)] text-white transition-all duration-300 hover:bg-[#6D071A]"
+                    aria-label={`Book ${service.name}`}
                   >
-                    Book
-                    <span className="material-symbols-outlined text-sm">arrow_right_alt</span>
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-              </GlassCard>
-            </motion.div>
-          ))}
-        </div>
-      )}
+              </motion.article>
+            ))}
+          </div>
+        )}
 
-      {/* View all CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.25 }}
-        className="text-center mt-10 md:mt-16"
-      >
-        <Link
-          href="/services"
-          className="inline-flex items-center justify-center px-8 py-3.5 rounded-full border border-[#E6E0DA] text-[#111111] hover:bg-white hover:shadow-md transition-all duration-300 text-[10px] uppercase tracking-[0.18em] font-semibold font-[family-name:var(--font-raleway)]"
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, delay: 0.15 }}
+          className="mt-8 text-center"
         >
-          View Full Service Menu
-        </Link>
-      </motion.div>
+          <Link
+            href="/services"
+            className="inline-flex items-center gap-2 pb-1 font-[family-name:var(--font-raleway)] text-xs font-bold uppercase tracking-[0.18em] transition-colors"
+            style={{
+              borderBottom: "1px solid var(--primary)",
+              color: "var(--primary)",
+            }}
+          >
+            Explore all services
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </motion.div>
+      </div>
     </section>
   );
 }

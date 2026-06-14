@@ -39,7 +39,7 @@ export default function ServicesPage() {
   return (
     <>
       <TopNavBar />
-      <main className="flex-grow pt-20 bg-[#FAF9F6]">
+      <main className="flex-grow pt-20" style={{ background: "var(--bg)", color: "var(--text)" }}>
         {/* Hero banner */}
         <section className="relative py-20 bg-[#1A1A1A] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#8B0000]/30 via-transparent to-[#D4AF37]/10 pointer-events-none"></div>
@@ -76,11 +76,11 @@ export default function ServicesPage() {
           <div className="mb-6">
             <div className="relative max-w-md mx-auto mb-3">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+                <Search className="h-4 w-4 text-[var(--text-subtle)]" />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-[#111111] placeholder-gray-400 focus:border-[#8B0000] focus:ring-2 focus:ring-[#8B0000]/10 transition-all duration-300 shadow-sm text-sm"
+                className="block w-full pl-10 pr-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder-gray-400 focus:border-[#8B0000] focus:ring-2 focus:ring-[#8B0000]/10 transition-all duration-300 shadow-sm text-sm"
                 placeholder="Search services..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -95,8 +95,8 @@ export default function ServicesPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 ${
                     selectedCategory === cat
-                      ? "bg-[#8B0000] text-white shadow-md"
-                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      ? "bg-[var(--primary)] text-white shadow-md"
+                      : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-soft)] hover:border-gray-300"
                   }`}
                 >
                   {cat}
@@ -113,13 +113,13 @@ export default function ServicesPage() {
           ) : filteredServices.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="text-center py-16 bg-white rounded-3xl border border-gray-100 max-w-2xl mx-auto"
+              className="text-center py-16 bg-[var(--surface)] rounded-3xl border border-[var(--border)] max-w-2xl mx-auto"
             >
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="w-6 h-6 text-gray-400" />
+              <div className="w-16 h-16 bg-[var(--bg-soft)] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-6 h-6 text-[var(--text-subtle)]" />
               </div>
-              <h3 className="font-serif text-xl text-[#111111] mb-2 font-bold">No services found</h3>
-              <p className="text-gray-500 text-sm">Try adjusting your search or category filter.</p>
+              <h3 className="font-serif text-xl text-[var(--text)] mb-2 font-bold">No services found</h3>
+              <p className="text-[var(--text-subtle)] text-sm">Try adjusting your search or category filter.</p>
             </motion.div>
           ) : (
             <motion.div 
@@ -135,7 +135,7 @@ export default function ServicesPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: index * 0.03 }}
-                    className="bg-white rounded-2xl p-5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 group cursor-pointer flex flex-col h-full border border-gray-100/80 relative overflow-hidden"
+                    className="bg-[var(--surface)] rounded-2xl p-5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 group cursor-pointer flex flex-col h-full border border-[var(--border)]/80 relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#D4AF37]/5 to-transparent rounded-bl-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
@@ -143,29 +143,29 @@ export default function ServicesPage() {
                       <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest bg-[#D4AF37]/10 px-2.5 py-0.5 rounded-md">
                         {service.tag || "Other"}
                       </span>
-                      <span className="font-bold text-[#111111]">
+                      <span className="font-bold text-[var(--text)]">
                         {service.currency === 'INR' ? '₹' : service.currency}{parseFloat(service.price).toLocaleString()}
                       </span>
                     </div>
 
-                    <h3 className="font-semibold text-base text-[#111111] mb-1.5 group-hover:text-[#8B0000] transition-colors line-clamp-2">
+                    <h3 className="font-semibold text-base text-[var(--text)] mb-1.5 group-hover:text-[var(--primary)] transition-colors line-clamp-2">
                       {service.name}
                     </h3>
 
                     {service.description && (
-                      <p className="text-gray-500 text-xs font-medium mb-4 line-clamp-2 leading-relaxed flex-grow">
+                      <p className="text-[var(--text-subtle)] text-xs font-medium mb-4 line-clamp-2 leading-relaxed flex-grow">
                         {service.description}
                       </p>
                     )}
 
                     <div className="mt-auto pt-3 flex items-center justify-between">
-                      <div className="flex items-center text-gray-400 text-xs font-semibold">
+                      <div className="flex items-center text-[var(--text-subtle)] text-xs font-semibold">
                         <Clock className="w-3.5 h-3.5 mr-1" />
                         {service.duration_minutes} min
                       </div>
                       <Link
                         href="/booking"
-                        className="text-[#8B0000] text-[11px] font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform duration-300 flex items-center bg-[#8B0000]/5 px-3 py-1.5 rounded-full group-hover:bg-[#8B0000]/10"
+                        className="text-[var(--primary)] text-[11px] font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform duration-300 flex items-center bg-[var(--primary)]/5 px-3 py-1.5 rounded-full group-hover:bg-[var(--primary)]/10"
                       >
                         Book
                         <span className="material-symbols-outlined text-[14px] ml-0.5">arrow_right_alt</span>

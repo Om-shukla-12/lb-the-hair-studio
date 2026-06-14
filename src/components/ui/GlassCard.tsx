@@ -8,7 +8,7 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     return (
       <div
         ref={ref}
-        className={cn("glass-card rounded-2xl", className)}
+        className={cn("glass-card rounded-lg", className)}
         {...props}
       >
         {children}

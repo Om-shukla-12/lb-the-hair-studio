@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MapPin, Menu, Moon, Sun, X } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -17,61 +19,96 @@ const navLinks = [
 export default function TopNavBar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const savedTheme = window.localStorage.getItem("lb-theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.dataset.theme = nextTheme;
+    window.localStorage.setItem("lb-theme", nextTheme);
+  };
+
+  const ThemeIcon = theme === "dark" ? Sun : Moon;
+  const isDark = theme === "dark";
 
   return (
     <>
-      <header className="bg-surface/80 backdrop-blur-xl dark:bg-surface-container-lowest/80 top-0 sticky border-b border-white/10 dark:border-outline-variant/10 shadow-[0_20px_40px_rgba(87,0,0,0.05)] z-50 transition-all duration-300">
-        <div className="flex justify-between items-center w-full px-4 md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20">
-          <Link
-            className="flex items-center gap-3 group"
-            href="/"
-          >
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              className="relative h-[34px] md:h-[45px] lg:h-[52px] w-[34px] md:w-[45px] lg:w-[52px] flex-shrink-0 group-hover:scale-105 transition-transform duration-500"
+      <header className="fixed left-0 right-0 top-0 z-50 px-3 pt-3 md:px-6">
+        <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between rounded-xl border px-3 shadow-lg backdrop-blur-2xl md:h-16 md:px-5"
+          style={{
+            background: isDark ? "rgba(15,15,16,0.85)" : "rgba(255,255,255,0.92)",
+            borderColor: isDark ? "rgba(212,175,55,0.15)" : "rgba(17,17,17,0.10)",
+            boxShadow: isDark ? "0 16px 45px rgba(0,0,0,0.34)" : "0 8px 28px rgba(17,17,17,0.10)",
+          }}
+        >
+          <Link className="group flex min-w-0 items-center gap-2.5" href="/">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
             >
-              <Image 
-                src="/photos/download.png"
-                alt="LB The Hair Studio Logo"
-                fill
-                className="object-contain"
-                priority
+              <div
+                className="w-72 h-20 md:w-80 md:h-24 bg-[var(--primary)]"
+                style={{
+                  WebkitMaskImage: "url(/photos/lbthelogo.png)",
+                  WebkitMaskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "left center",
+                  maskImage: "url(/photos/lbthelogo.png)",
+                  maskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "left center",
+                }}
+                aria-label="LB The Hair Studio logo"
               />
             </motion.div>
-            <div className="flex flex-col justify-center">
-              <motion.span 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="font-[family-name:var(--font-cormorant)] text-[17px] md:text-2xl lg:text-3xl font-semibold text-[#111111] tracking-wide leading-tight italic"
-              >
-                LB The Hair Studio
-              </motion.span>
-              <motion.span 
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="font-[family-name:var(--font-raleway)] hidden sm:block text-[8px] md:text-[9px] tracking-[0.25em] text-[#5A5A5A] uppercase font-semibold"
-              >
-                L'Oréal Professionnel Partner
-              </motion.span>
-            </div>
+            {/* <div className="min-w-0 flex flex-col justify-center">
+              <span className="hidden truncate font-[family-name:var(--font-raleway)] text-[8px] font-bold uppercase tracking-[0.22em] sm:block"
+                style={{ color: "var(--accent-text)" }}>
+                L&apos;Oreal Professionnel Partner
+              </span>
+            </div> */}
           </Link>
 
-          <nav className="hidden md:flex gap-8 items-center h-full">
+          <nav className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`font-[family-name:var(--font-raleway)] text-[11px] uppercase tracking-[0.15em] font-semibold h-full flex items-center transition-all duration-300 ${
-                    isActive
-                      ? "text-[#8B0000] border-b-2 border-[#8B0000] opacity-100"
-                      : "text-gray-600 hover:text-[#8B0000] opacity-80 hover:opacity-100 hover:scale-105"
-                  }`}
+                  className="rounded-md px-3 py-2 font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.16em] transition-all duration-300"
+                  style={{
+                    background: isActive ? "rgba(139,0,0,0.14)" : "transparent",
+                    color: isActive ? "var(--text)" : "var(--text-muted)",
+                    boxShadow: isActive && isDark ? "inset 0 0 0 1px rgba(212,175,55,0.18)" : undefined,
+                  }}
+                  onMouseEnter={e => {
+                    if (!isActive) {
+                      (e.currentTarget as HTMLElement).style.color = "var(--text)";
+                      (e.currentTarget as HTMLElement).style.background = "var(--border-soft)";
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isActive) {
+                      (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+                      (e.currentTarget as HTMLElement).style.background = "transparent";
+                    }
+                  }}
                 >
                   {link.name}
                 </Link>
@@ -79,50 +116,65 @@ export default function TopNavBar() {
             })}
           </nav>
 
-          <div className="hidden md:flex items-center gap-4">
-            <a 
-              href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-[#8B0000]/10 text-[#8B0000] hover:bg-[#8B0000] hover:text-white hover:scale-110 transition-all duration-300 shadow-sm"
-              title="View on Google Maps"
+          <div className="hidden items-center gap-2 md:flex">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="theme-toggle flex h-9 w-9 items-center justify-center rounded-md border transition-all duration-300"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
             >
-              <span className="material-symbols-outlined text-[20px]">location_on</span>
-            </a>
-            <a 
-              href="https://wa.me/7878464710" 
-              target="_blank" 
+              {mounted ? <ThemeIcon className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <a
+              href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8"
+              target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-[#25D366] text-white hover:scale-110 transition-transform shadow-md"
-              title="Chat on WhatsApp"
+              className="flex h-9 w-9 items-center justify-center rounded-md border transition-all duration-300"
+              style={{ border: "1px solid var(--border)", color: "var(--accent-text)", background: "var(--surface)" }}
+              aria-label="View location on Google Maps"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-              </svg>
+              <MapPin className="h-4 w-4" />
             </a>
-            <Link href="/booking" className="btn-primary bg-[#8B0000] hover:bg-[#5C0000] text-white font-[family-name:var(--font-raleway)] font-semibold text-[10px] uppercase px-8 py-3 rounded-full transition-all duration-300 tracking-[0.2em] shadow-[0_10px_30px_rgba(139,0,0,0.2)]">
+            <a
+              href="https://wa.me/7878464710"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-9 w-9 items-center justify-center rounded-md border transition-all duration-300"
+              style={{ border: "1px solid var(--border)", color: "#25D366", background: "var(--surface)" }}
+              aria-label="Chat on WhatsApp"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+            </a>
+            <Link
+              href="/booking"
+              className="btn-primary rounded-md px-5 py-2.5 font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.18em]"
+            >
               Book Now
             </Link>
           </div>
 
-          {/* Mobile: compact book + hamburger */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="theme-toggle flex h-9 w-9 items-center justify-center rounded-md border"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            >
+              {mounted ? <ThemeIcon className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <Link
               href="/booking"
-              className="bg-[#8B0000] text-white font-[family-name:var(--font-raleway)] text-[9px] uppercase tracking-[0.15em] font-bold px-3.5 py-1.5 rounded-full"
+              className="btn-primary rounded-md px-3 py-2 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.14em]"
             >
               Book
             </Link>
             <button
-              className="text-[#8B0000] p-1"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex h-9 w-9 items-center justify-center rounded-md border transition-colors"
+              style={{ border: "1px solid var(--border)", color: "var(--text-muted)", background: "var(--surface)" }}
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              aria-label="Toggle navigation menu"
             >
-              <span
-                className="material-symbols-outlined text-[26px]"
-                style={{ fontVariationSettings: "'FILL' 0" }}
-              >
-                {isMobileMenuOpen ? "close" : "menu"}
-              </span>
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -131,12 +183,14 @@ export default function TopNavBar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-white/95 backdrop-blur-3xl pt-24 px-6 md:hidden"
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.22 }}
+            className="fixed inset-0 z-40 px-5 pt-24 backdrop-blur-2xl md:hidden"
+            style={{ background: isDark ? "rgba(15,15,16,0.97)" : "rgba(249,247,243,0.98)" }}
           >
-            <nav className="flex flex-col gap-6 items-center">
+            <nav className="mx-auto flex max-w-sm flex-col gap-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -144,42 +198,38 @@ export default function TopNavBar() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`font-serif text-2xl ${
-                      isActive ? "text-[#8B0000]" : "text-[#111111]"
-                    }`}
+                    className="rounded-xl border px-4 py-3.5 font-[family-name:var(--font-cormorant)] text-2xl transition-colors"
+                    style={{
+                      border: "1px solid var(--border)",
+                      background: isActive ? "rgba(139,0,0,0.12)" : "var(--surface)",
+                      color: isActive ? "var(--primary)" : "var(--text-muted)",
+                    }}
                   >
                     {link.name}
                   </Link>
                 );
               })}
-              
-              <div className="flex flex-col gap-4 mt-4 w-full max-w-xs">
-                <Link
-                  href="/booking"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="bg-[#8B0000] text-white text-center font-bold text-sm uppercase px-8 py-4 rounded-full w-full"
-                >
-                  Book Now
-                </Link>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
                 <a
-                  href="https://wa.me/7878464710" 
-                  target="_blank" 
+                  href="https://wa.me/7878464710"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#25D366] text-white flex items-center justify-center gap-2 font-bold text-sm uppercase px-8 py-4 rounded-full w-full"
+                  className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors"
+                  style={{ border: "1px solid var(--border)", color: "#25D366", background: "var(--surface)" }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-                  </svg>
+                  <WhatsAppIcon className="h-4 w-4" />
                   WhatsApp
                 </a>
                 <a
-                  href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8" 
-                  target="_blank" 
+                  href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#8B0000]/10 text-[#8B0000] flex items-center justify-center gap-2 font-bold text-sm uppercase px-8 py-4 rounded-full w-full hover:bg-[#8B0000] hover:text-white transition-all duration-300"
+                  className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors"
+                  style={{ border: "1px solid var(--border)", color: "var(--accent-text)", background: "var(--surface)" }}
                 >
-                  <span className="material-symbols-outlined text-[20px]">location_on</span>
-                  Find on Maps
+                  <MapPin className="h-4 w-4" />
+                  Maps
                 </a>
               </div>
             </nav>

@@ -97,7 +97,7 @@ export default function Gallery() {
   }, [selectedIndex, goNext, goPrev, closeLightbox]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1A1A1A]">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)", color: "var(--text)" }}>
       <TopNavBar />
 
       <main className="flex-grow pt-32 pb-16">
@@ -116,7 +116,7 @@ export default function Gallery() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#8B0000] mb-6 font-bold tracking-tight"
+              className="font-serif text-4xl md:text-5xl lg:text-6xl text-[var(--primary)] mb-6 font-bold tracking-tight"
             >
               Masterpieces in Motion
             </motion.h1>
@@ -124,7 +124,7 @@ export default function Gallery() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed"
+              className="text-base md:text-lg text-[var(--text-subtle)] max-w-2xl mx-auto font-light leading-relaxed"
             >
               Step into a visual journey showcasing our signature transformations,
               meticulous coloring, and custom-tailored editorial hair styles.
@@ -143,7 +143,7 @@ export default function Gallery() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 key={item.id}
                 onClick={() => setSelectedIndex(index)}
-                className="group relative overflow-hidden rounded-xl bg-white cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 break-inside-avoid"
+                className="group relative overflow-hidden rounded-xl bg-[var(--surface)] cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 break-inside-avoid"
               >
                 <div className="relative w-full overflow-hidden">
                   {item.type === "video" ? (
@@ -177,7 +177,7 @@ export default function Gallery() {
               {/* Close button */}
               <button
                 onClick={closeLightbox}
-                className="absolute top-5 right-5 text-white hover:text-[#D4AF37] transition-colors z-50 flex items-center justify-center p-2 rounded-full bg-white/10 hover:bg-white/20"
+                className="absolute top-5 right-5 text-white hover:text-[#D4AF37] transition-colors z-50 flex items-center justify-center p-2 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/20"
               >
                 <span className="material-symbols-outlined text-3xl">close</span>
               </button>
@@ -190,7 +190,7 @@ export default function Gallery() {
               {/* Prev button */}
               <button
                 onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all duration-200 hover:scale-110"
+                className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/25 text-white transition-all duration-200 hover:scale-110"
                 aria-label="Previous image"
               >
                 <span className="material-symbols-outlined text-3xl">chevron_left</span>
@@ -199,7 +199,7 @@ export default function Gallery() {
               {/* Next button */}
               <button
                 onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all duration-200 hover:scale-110"
+                className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/25 text-white transition-all duration-200 hover:scale-110"
                 aria-label="Next image"
               >
                 <span className="material-symbols-outlined text-3xl">chevron_right</span>

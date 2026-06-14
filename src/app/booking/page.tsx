@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import TopNavBar from "@/components/layout/TopNavBar";
 import Footer from "@/components/layout/Footer";
@@ -92,9 +93,11 @@ export default function BookingPage() {
       console.log("SENDING PAYLOAD:", JSON.stringify(payload, null, 2));
       await createBooking.mutateAsync(payload);
       setIsSuccessModalOpen(true);
-    } catch (error: any) {
-      console.error("Booking failed:", error.response?.data || error);
-      alert(`Failed to create booking. Error: ${JSON.stringify(error.response?.data || error.message)}`);
+    } catch (error: unknown) {
+      const bookingError = error as { response?: { data?: unknown }; message?: string };
+      const errorDetails = bookingError.response?.data ?? bookingError.message ?? "Unknown error";
+      console.error("Booking failed:", errorDetails);
+      alert(`Failed to create booking. Error: ${JSON.stringify(errorDetails)}`);
     }
   };
 
@@ -106,28 +109,29 @@ export default function BookingPage() {
   return (
     <>
       <TopNavBar />
-      <div className="min-h-screen bg-gradient-to-b from-[#FCF9F8] to-[#F0EDEC] pt-16 pb-10">
+      <div className="luxury-shell min-h-screen pt-24 pb-10 md:pt-28">
         <div className="max-w-5xl mx-auto px-4">
 
           {/* Back link */}
           <div className="mb-4">
-            <a
+            <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#8B0000] transition-colors duration-200 group"
+              className="inline-flex items-center gap-1.5 text-xs transition-colors duration-200 group"
+              style={{ color: 'var(--text-muted)' }}
             >
               <span className="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform duration-200">
                 arrow_back
               </span>
               Back to Home
-            </a>
+            </Link>
           </div>
 
           {/* Page title */}
           <div className="text-center mb-5">
-            <h1 className="text-3xl md:text-4xl font-bold font-serif text-[#111111] mb-2">
+            <h1 className="text-4xl md:text-5xl font-semibold font-serif mb-2" style={{ color: 'var(--text)' }}>
               Book Your Appointment
             </h1>
-            <p className="text-gray-500 max-w-xl mx-auto text-sm">
+            <p className="max-w-xl mx-auto text-sm" style={{ color: 'var(--text-muted)' }}>
               Select your preferred date, time, and services to begin your luxury experience.
             </p>
           </div>

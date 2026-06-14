@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function MissionStatement() {
   return (
-    <section className="py-24 px-4 md:px-8 bg-[#FAF8F5] relative">
+    <section className="py-24 px-4 md:px-8 bg-[var(--bg)] relative">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         
         <motion.div 
@@ -30,14 +30,14 @@ export default function MissionStatement() {
           className="md:pl-16 flex flex-col justify-center h-full mt-12 md:mt-0"
         >
           <span className="text-xs text-[#D4AF37] tracking-[0.2em] uppercase mb-4 block font-bold">The Mission</span>
-          <h2 className="font-serif text-3xl md:text-4xl text-[#111111] mb-8 font-bold">Confidence and Elegance, Mastered.</h2>
-          <p className="text-[#5A5A5A] mb-6 text-lg font-light leading-relaxed">
+          <h2 className="font-serif text-3xl md:text-4xl text-[var(--text)] mb-8 font-bold">Confidence and Elegance, Mastered.</h2>
+          <p className="text-[var(--text-muted)] mb-6 text-lg font-light leading-relaxed">
             Our philosophy is rooted in the belief that true luxury is whispering, not shouting. We curate bespoke styles that enhance your natural beauty, ensuring every client leaves feeling empowered, sophisticated, and undeniably elegant.
           </p>
-          <p className="text-[#5A5A5A] mb-6 text-lg font-light leading-relaxed">
+          <p className="text-[var(--text-muted)] mb-6 text-lg font-light leading-relaxed">
             As a proud L'Oréal Professionnel partner, we use only the finest professional-grade products and techniques to deliver transformative results.
           </p>
-          <p className="text-[#5A5A5A] mb-10 text-lg font-light leading-relaxed">
+          <p className="text-[var(--text-muted)] mb-10 text-lg font-light leading-relaxed">
             Every appointment is a curated journey. From the moment you step into our sanctuary, you are enveloped in an atmosphere of serene exclusivity, designed to relax the mind while we transform your look.
           </p>
           <div className="w-24 h-px bg-[#E6E0DA]"></div>

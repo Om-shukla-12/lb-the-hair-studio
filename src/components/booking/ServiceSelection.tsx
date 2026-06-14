@@ -47,7 +47,7 @@ function CartItem({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 40 }}
-      className="flex items-start justify-between bg-gray-50 rounded-xl p-3 mb-2 border border-transparent"
+      className="flex items-start justify-between bg-[var(--surface)] rounded-xl p-3 mb-2 border border-[var(--border)] shadow-sm"
     >
       <div className="flex items-start gap-3 flex-grow min-w-0 pr-2">
         <div className="flex flex-col gap-1 mt-0.5">
@@ -55,7 +55,7 @@ function CartItem({
             onClick={onMoveUp}
             disabled={isFirst}
             className={`p-1 rounded-md transition-colors ${
-              isFirst ? "text-gray-300 cursor-not-allowed" : "text-gray-400 hover:bg-gray-200 hover:text-[#8B0000]"
+              isFirst ? "text-[var(--text-subtle)] cursor-not-allowed" : "text-[var(--text-subtle)] hover:bg-[rgba(139,0,0,0.05)] hover:text-[var(--primary)]"
             }`}
           >
             <ChevronUp className="w-4 h-4" />
@@ -64,37 +64,37 @@ function CartItem({
             onClick={onMoveDown}
             disabled={isLast}
             className={`p-1 rounded-md transition-colors ${
-              isLast ? "text-gray-300 cursor-not-allowed" : "text-gray-400 hover:bg-gray-200 hover:text-[#8B0000]"
+              isLast ? "text-[var(--text-subtle)] cursor-not-allowed" : "text-[var(--text-subtle)] hover:bg-[rgba(139,0,0,0.05)] hover:text-[var(--primary)]"
             }`}
           >
             <ChevronDown className="w-4 h-4" />
           </button>
         </div>
         <div className="flex-grow min-w-0 mt-1">
-          <p className="text-sm font-semibold text-[#111111] truncate">{service.name}</p>
+          <p className="text-sm font-semibold text-[var(--text)] truncate">{service.name}</p>
           {timelineItem && (
-            <p className="text-[11px] text-gray-600 mt-0.5 flex items-center gap-1 font-medium">
-              <Clock className="w-3 h-3 text-gray-400" />
-              {timelineItem.formattedStartTime} → {timelineItem.formattedEndTime}
+            <p className="text-[11px] text-[var(--text-muted)] mt-0.5 flex items-center gap-1 font-medium">
+              <Clock className="w-3 h-3 text-[var(--text-subtle)]" />
+              {timelineItem.formattedStartTime} to {timelineItem.formattedEndTime}
             </p>
           )}
           {chosenBarber && (
-            <p className="text-[10px] text-[#8B0000] font-medium mt-1 bg-[#8B0000]/5 inline-block px-1.5 py-0.5 rounded">✦ {chosenBarber.full_name}</p>
+            <p className="text-[10px] text-[var(--primary)] font-medium mt-1 bg-[rgba(139,0,0,0.05)] inline-block px-1.5 py-0.5 rounded">✦ {chosenBarber.full_name}</p>
           )}
           {chosenBarberId === null && (
-            <p className="text-[10px] text-gray-500 font-medium mt-1 bg-gray-100 inline-block px-1.5 py-0.5 rounded">Any available staff</p>
+            <p className="text-[10px] text-[var(--text-muted)] font-medium mt-1 bg-[rgba(139,0,0,0.05)] inline-block px-1.5 py-0.5 rounded">Any available staff</p>
           )}
         </div>
       </div>
       <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
         <button
           onClick={() => handleRemoveService(service.id)}
-          className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-red-50 hover:border-red-200 transition-colors group"
+          className="w-6 h-6 rounded-md bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center hover:bg-[rgba(255,0,0,0.05)] hover:border-[rgba(255,0,0,0.2)] transition-colors group"
         >
-          <X className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500 transition-colors" />
+          <X className="w-3.5 h-3.5 text-[var(--text-subtle)] group-hover:text-red-500 transition-colors" />
         </button>
-        <span className="text-sm font-bold text-[#111111] mt-2">
-          {service.currency === "INR" ? "₹" : service.currency}
+        <span className="text-sm font-bold text-[var(--text)] mt-2">
+          {service.currency === "INR" ? "Rs. " : service.currency}
           {parseFloat(service.price).toLocaleString()}
         </span>
       </div>
@@ -289,25 +289,25 @@ export default function ServiceSelection({
       <div className="mb-4 px-4 md:px-0">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#8B0000] transition-colors duration-200 group mb-2"
+          className="inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors duration-200 group mb-2"
         >
           <span className="material-symbols-outlined text-[15px] group-hover:-translate-x-1 transition-transform duration-200">arrow_back</span>
           Back to Time
         </button>
-        <h2 className="text-xl md:text-2xl font-bold text-[#111111] font-serif">Select Services</h2>
-        <p className="text-gray-500 mt-0.5 text-sm">Choose services and preferred stylist for each.</p>
+        <h2 className="text-xl md:text-2xl font-bold text-[var(--text)] font-serif">Select Services</h2>
+        <p className="text-[var(--text-muted)] mt-0.5 text-sm">Choose services and preferred stylist for each.</p>
       </div>
 
       {/* Sticky top bar */}
-      <div className="sticky top-20 z-30 bg-[#FAF9F6]/95 backdrop-blur-xl pt-3 pb-2 px-4 md:px-0 -mx-4 md:mx-0">
+      <div className="sticky top-20 z-30 bg-[var(--bg)]/95 backdrop-blur-xl pt-3 pb-2 px-4 md:px-0 -mx-4 md:mx-0">
         {/* Search */}
         <div className="relative mb-2">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-4 w-4 text-[var(--text-subtle)]" />
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-[#1A1A1A] placeholder-gray-400 focus:bg-white focus:border-[#8B0000] focus:ring-1 focus:ring-[#8B0000]/20 transition-all duration-300 shadow-sm text-sm"
+            className="block w-full pl-10 pr-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder-gray-400 focus:bg-[var(--surface)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/20 transition-all duration-300 shadow-sm text-sm"
             placeholder="Search services..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -324,8 +324,8 @@ export default function ServiceSelection({
                 onClick={() => setSelectedCategoryFilter(cat)}
                 className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
                   isSelected
-                    ? "bg-[#8B0000] text-white shadow-sm"
-                    : "bg-white/80 text-gray-600 border border-gray-200 hover:bg-white"
+                    ? "bg-[var(--primary)] text-white shadow-sm"
+                    : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[rgba(139,0,0,0.03)]"
                 }`}
               >
                 {cat}
@@ -335,23 +335,23 @@ export default function ServiceSelection({
         </div>
 
         {/* Desktop summary */}
-        <div className="hidden md:flex mt-2 bg-white rounded-xl px-4 py-2.5 border border-gray-100 shadow-sm items-center justify-between">
-          <div className="flex items-center gap-4 text-sm font-medium text-gray-700">
-            <span>Selected: <span className="text-[#8B0000] font-bold">{selectedServices.length}</span></span>
-            <span className="w-px h-3 bg-gray-200" />
-            <span>Time: <span className="text-[#8B0000] font-bold">{overallStartTime ? `${overallStartTime} - ${overallEndTime}` : '0 min'}</span></span>
-            <span className="w-px h-3 bg-gray-200" />
-            <span>Total: <span className="text-[#8B0000] font-bold">₹{totalPrice.toLocaleString()}</span></span>
+        <div className="hidden md:flex mt-2 bg-[var(--surface)] rounded-xl px-4 py-2.5 border border-[var(--border)] shadow-sm items-center justify-between">
+          <div className="flex items-center gap-4 text-sm font-medium text-[var(--text-muted)]">
+            <span>Selected: <span className="text-[var(--primary)] font-bold">{selectedServices.length}</span></span>
+            <span className="w-px h-3 bg-[var(--border)]" />
+            <span>Time: <span className="text-[var(--primary)] font-bold">{overallStartTime ? `${overallStartTime} to ${overallEndTime}` : '0 min'}</span></span>
+            <span className="w-px h-3 bg-[var(--border)]" />
+            <span>Total: <span className="text-[var(--primary)] font-bold">Rs. {totalPrice.toLocaleString()}</span></span>
           </div>
           <div className="flex gap-2">
-            <button onClick={onBack} className="px-4 py-1.5 rounded-full font-medium text-gray-600 hover:bg-gray-100 transition-colors text-xs">Back</button>
+            <button onClick={onBack} className="px-4 py-1.5 rounded-full font-medium text-[var(--text-muted)] hover:bg-[rgba(139,0,0,0.05)] transition-colors text-xs">Back</button>
             <button
               onClick={onNext}
               disabled={selectedServices.length === 0}
               className={`px-6 py-1.5 rounded-full text-white font-semibold transition-all duration-200 text-xs ${
                 selectedServices.length > 0
-                  ? "bg-[#8B0000] hover:bg-[#5C0000] shadow-sm"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  ? "bg-[var(--primary)] hover:bg-[#5C0000] shadow-sm"
+                  : "bg-[var(--border)] text-[var(--text-subtle)] cursor-not-allowed"
               }`}
             >
               Continue
@@ -371,7 +371,7 @@ export default function ServiceSelection({
             Failed to load services. Please try again.
           </div>
         ) : Object.keys(groupedServices).length > 0 ? (
-          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm divide-y divide-gray-100">
+          <div className="rounded-2xl overflow-hidden border border-[var(--border)] shadow-sm divide-y divide-gray-100">
             {Object.entries(groupedServices).map(([category, catServices]) => {
               const isExpanded = expandedCategory === category;
               const selectedCountInCategory = catServices.filter((s) => selectedServices.includes(s.id)).length;
@@ -380,28 +380,28 @@ export default function ServiceSelection({
               return (
                 <div
                   key={category}
-                  className={`bg-white transition-all duration-200 ${hasSelections ? "border-l-4 border-l-[#D4AF37]" : ""}`}
+                  className={`bg-[var(--surface)] transition-all duration-200 ${hasSelections ? "border-l-4 border-l-[#8B0000]" : ""}`}
                 >
                   {/* Category header */}
                   <button
                     onClick={() => toggleCategory(category)}
                     className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${
-                      hasSelections ? "bg-[#8B0000]/5 hover:bg-[#8B0000]/8" : "bg-white hover:bg-gray-50/80"
+                      hasSelections ? "bg-[rgba(139,0,0,0.05)] hover:bg-[rgba(139,0,0,0.1)]" : "bg-[var(--surface)] hover:bg-[rgba(139,0,0,0.02)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       {hasSelections && (
-                        <span className="w-4 h-4 rounded-full bg-[#8B0000] flex items-center justify-center text-white text-[9px] font-bold">
+                        <span className="w-4 h-4 rounded-full bg-[var(--primary)] flex items-center justify-center text-white text-[9px] font-bold">
                           {selectedCountInCategory}
                         </span>
                       )}
-                      <h3 className={`text-xs font-bold tracking-widest uppercase ${hasSelections ? "text-[#8B0000]" : "text-[#111111]"}`}>
+                      <h3 className={`text-xs font-bold tracking-widest uppercase ${hasSelections ? "text-[var(--primary)]" : "text-[var(--text)]"}`}>
                         {category}
                       </h3>
                     </div>
                     {isExpanded
-                      ? <ChevronUp className={`w-4 h-4 ${hasSelections ? "text-[#8B0000]" : "text-gray-400"}`} />
-                      : <ChevronDown className={`w-4 h-4 ${hasSelections ? "text-[#8B0000]" : "text-gray-400"}`} />
+                      ? <ChevronUp className={`w-4 h-4 ${hasSelections ? "text-[var(--primary)]" : "text-[var(--text-subtle)]"}`} />
+                      : <ChevronDown className={`w-4 h-4 ${hasSelections ? "text-[var(--primary)]" : "text-[var(--text-subtle)]"}`} />
                     }
                   </button>
 
@@ -414,7 +414,7 @@ export default function ServiceSelection({
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                       >
-                        <div className="divide-y divide-gray-50">
+                        <div className="divide-y divide-gray-100">
                           {catServices.map((service) => {
                             const isSelected = selectedServices.includes(service.id);
                             const selectedBarberId = selectedBarbers[service.id];
@@ -425,14 +425,14 @@ export default function ServiceSelection({
                                 {/* Service Row */}
                                 <div
                                   onClick={() => onToggleService(service.id)}
-                                  className={`group flex items-center cursor-pointer transition-all duration-200 px-4 py-2.5 ${
-                                    isSelected ? "bg-[#8B0000]/3" : "hover:bg-gray-50/70"
+                                  className={`group flex items-center cursor-pointer transition-all duration-200 px-3.5 py-3 md:px-4 ${
+                                    isSelected ? "bg-[rgba(139,0,0,0.05)]" : "hover:bg-[rgba(139,0,0,0.03)]"
                                   }`}
                                 >
                                   {/* Checkbox */}
                                   <div className="flex-shrink-0 mr-3">
                                     <div className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${
-                                      isSelected ? "bg-[#D4AF37] border-[#D4AF37]" : "border-2 border-gray-300 group-hover:border-[#D4AF37]"
+                                      isSelected ? "bg-[var(--primary)] border-[var(--primary)]" : "border-2 border-[var(--border)] group-hover:border-[var(--primary)]/50"
                                     }`}>
                                       {isSelected && <Check size={11} strokeWidth={4} className="text-white" />}
                                     </div>
@@ -440,17 +440,17 @@ export default function ServiceSelection({
 
                                   {/* Service info */}
                                   <div className="flex-grow min-w-0">
-                                    <h4 className={`text-sm font-semibold truncate ${isSelected ? "text-[#8B0000]" : "text-[#1A1A1A]"}`}>
+                                    <h4 className={`text-sm font-semibold truncate ${isSelected ? "text-[var(--primary)]" : "text-[var(--text)]"}`}>
                                       {service.name}
                                     </h4>
-                                    <div className="flex items-center text-xs text-gray-500 mt-0.5 flex-wrap gap-x-3 gap-y-1">
+                                    <div className="flex items-center text-xs text-[var(--text-muted)] mt-0.5 flex-wrap gap-x-3 gap-y-1">
                                       <span className="flex items-center">
-                                        <Clock className="w-2.5 h-2.5 mr-1" />
+                                        <Clock className="w-2.5 h-2.5 mr-1 text-[var(--text-subtle)]" />
                                         {service.duration_minutes} min
                                       </span>
                                       {isSelected && timelineItem && (
-                                        <span className="font-medium text-[#8B0000] bg-[#8B0000]/5 px-1.5 py-0.5 rounded">
-                                          {timelineItem.formattedStartTime} → {timelineItem.formattedEndTime}
+                                        <span className="font-medium text-[var(--primary)] bg-[rgba(139,0,0,0.1)] px-1.5 py-0.5 rounded">
+                                          {timelineItem.formattedStartTime} to {timelineItem.formattedEndTime}
                                         </span>
                                       )}
                                     </div>
@@ -458,13 +458,13 @@ export default function ServiceSelection({
 
                                   {/* Price */}
                                   <div className="flex-shrink-0 ml-2 text-right">
-                                    <span className="font-bold text-sm text-[#1A1A1A]">
-                                      {service.currency === 'INR' ? '₹' : service.currency}{parseFloat(service.price).toLocaleString()}
+                                    <span className="font-bold text-sm text-[var(--text)]">
+                                      {service.currency === 'INR' ? 'Rs. ' : service.currency}{parseFloat(service.price).toLocaleString()}
                                     </span>
                                   </div>
                                 </div>
 
-                                {/* Inline Stylist Tags — shown when service is selected */}
+                                {/* Inline stylist tags shown when service is selected. */}
                                 <AnimatePresence>
                                   {isSelected && (
                                     <motion.div
@@ -474,11 +474,11 @@ export default function ServiceSelection({
                                       transition={{ duration: 0.2 }}
                                       className="overflow-hidden"
                                     >
-                                        <div className="px-4 pb-3 pt-1.5 bg-[#8B0000]/3 border-t border-[#8B0000]/8">
+                                        <div className="px-4 pb-3 pt-2 bg-[var(--bg-soft)] border-t border-[var(--border)]">
                                           {/* Stylist header with available count from API */}
                                           <div className="flex items-center justify-between mb-2">
-                                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Preferred Stylist</p>
-                                            <span className="text-[10px] text-gray-400 font-medium">
+                                            <p className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-widest">Preferred Stylist</p>
+                                            <span className="text-[10px] text-[var(--text-muted)] font-medium">
                                               {countAvailableForService(service.id)}/{slotTotalCount} slots available
                                             </span>
                                           </div>
@@ -490,10 +490,10 @@ export default function ServiceSelection({
                                               title={!anyStaffAvailable(service.id) ? "No staff available at this time" : ""}
                                               className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
                                                 !anyStaffAvailable(service.id)
-                                                  ? "opacity-40 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400"
+                                                  ? "opacity-40 cursor-not-allowed bg-[rgba(139,0,0,0.05)] border-[var(--border)] text-[var(--text-subtle)]"
                                                   : selectedBarberId === null
-                                                  ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
-                                                  : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
+                                                  ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm"
+                                                  : "bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
                                               }`}
                                             >
                                               <span className="flex items-center gap-1">
@@ -514,16 +514,16 @@ export default function ServiceSelection({
                                                   title={!isAvail ? `${barber.full_name} is not available at this time` : ""}
                                                   className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
                                                     !isAvail
-                                                      ? "opacity-40 cursor-not-allowed bg-gray-50 border-dashed border-gray-200 text-gray-400"
+                                                      ? "opacity-40 cursor-not-allowed bg-[var(--bg-soft)] border-dashed border-[var(--border)] text-[var(--text-subtle)]"
                                                       : isChosen
-                                                      ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
-                                                      : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
+                                                      ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm"
+                                                      : "bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
                                                   }`}
                                                 >
                                                   <span className="flex items-center gap-1">
                                                     {barber.full_name}
                                                     {!isAvail && (
-                                                      <span className="text-[8px] font-normal text-gray-400 ml-0.5">✕ busy</span>
+                                                      <span className="text-[8px] font-normal text-[var(--text-subtle)] ml-0.5">busy</span>
                                                     )}
                                                   </span>
                                                 </button>
@@ -549,16 +549,16 @@ export default function ServiceSelection({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-2xl border border-gray-100 shadow-sm"
+            className="flex flex-col items-center justify-center py-16 text-center bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-sm"
           >
             <Search className="w-8 h-8 text-gray-300 mb-3" />
-            <h3 className="text-base font-bold text-[#111111] mb-1">No services found</h3>
-            <p className="text-gray-400 text-sm">Try adjusting your search or category filter.</p>
+            <h3 className="text-base font-bold text-[var(--text)] mb-1">No services found</h3>
+            <p className="text-[var(--text-muted)] text-sm">Try adjusting your search or category filter.</p>
           </motion.div>
         )}
       </div>
 
-      {/* ─── FLOATING CART ─── */}
+      {/* Floating booking summary */}
 
       {/* Desktop: Fixed cart button (bottom-right) */}
       <AnimatePresence>
@@ -568,11 +568,11 @@ export default function ServiceSelection({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsCartOpen(true)}
-            className="hidden md:flex fixed bottom-8 right-8 z-40 items-center gap-2 bg-[#8B0000] text-white px-5 py-3 rounded-full shadow-[0_8px_30px_rgba(139,0,0,0.35)] hover:bg-[#5C0000] transition-all duration-200 hover:-translate-y-0.5"
+            className="hidden md:flex fixed bottom-8 right-8 z-40 items-center gap-2 bg-[var(--primary)] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#5C0000] transition-all duration-200 hover:-translate-y-0.5"
           >
             <ShoppingBag className="w-4 h-4" />
             <span className="font-bold text-sm">{selectedServices.length} Services</span>
-            <span className="text-xs font-semibold bg-white/20 px-2 py-0.5 rounded-full">₹{totalPrice.toLocaleString()}</span>
+            <span className="text-xs font-semibold bg-[var(--surface)]/20 px-2 py-0.5 rounded-full">Rs. {totalPrice.toLocaleString()}</span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -585,21 +585,21 @@ export default function ServiceSelection({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] px-4 py-3 pb-safe"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--surface)] border-t border-[var(--border)] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] px-4 py-3 pb-safe backdrop-blur-xl"
           >
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="flex-1 flex items-center justify-between bg-[#8B0000] text-white px-4 py-3 rounded-xl shadow-sm active:scale-95 transition-transform"
+                className="flex-1 flex items-center justify-between bg-[var(--primary)] text-white px-4 py-3 rounded-xl shadow-sm active:scale-95 transition-transform"
               >
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-4 h-4" />
                   <div className="flex flex-col items-start">
                     <span className="font-bold text-sm">{selectedServices.length} Services</span>
-                    <span className="text-[10px] text-white/80">{overallStartTime} → {overallEndTime}</span>
+                    <span className="text-[10px] text-white/80">{overallStartTime} to {overallEndTime}</span>
                   </div>
                 </div>
-                <span className="font-bold text-sm">₹{totalPrice.toLocaleString()}</span>
+                <span className="font-bold text-sm">Rs. {totalPrice.toLocaleString()}</span>
               </button>
             </div>
           </motion.div>
@@ -615,7 +615,7 @@ export default function ServiceSelection({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
               onClick={() => setIsCartOpen(false)}
             />
 
@@ -626,13 +626,13 @@ export default function ServiceSelection({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 350, damping: 35 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-[var(--surface)] rounded-l-2xl shadow-2xl flex flex-col"
             >
               {/* Drawer Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white z-10 relative">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)] bg-[var(--surface)] z-10 relative rounded-tl-2xl">
                 <div>
-                  <h3 className="text-base font-bold text-[#111111] font-serif">Your Schedule</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">Use arrows to reorder services</p>
+                  <h3 className="text-lg font-bold text-[var(--text)] font-serif">Booking Summary</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">Use arrows to reorder services</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {selectedServices.length > 0 && (
@@ -640,7 +640,7 @@ export default function ServiceSelection({
                       onClick={() => {
                         selectedServices.forEach((id) => onToggleService(id));
                       }}
-                      className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium flex items-center gap-1"
+                      className="text-xs text-[var(--text-muted)] hover:text-red-500 transition-colors font-medium flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
                       Clear
@@ -648,17 +648,17 @@ export default function ServiceSelection({
                   )}
                   <button
                     onClick={() => setIsCartOpen(false)}
-                    className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    className="w-7 h-7 rounded-md bg-[rgba(139,0,0,0.05)] flex items-center justify-center hover:bg-[var(--border)] transition-colors"
                   >
-                    <X className="w-4 h-4 text-gray-600" />
+                    <X className="w-4 h-4 text-[var(--text-muted)]" />
                   </button>
                 </div>
               </div>
 
               {/* Services List (Up/Down arrows) */}
-              <div className="flex-1 overflow-y-auto p-4 bg-white relative z-0">
+              <div className="flex-1 overflow-y-auto p-4 bg-[var(--bg-soft)]/50 relative z-0">
                 {selectedServiceDetails.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-[var(--text-subtle)]">
                     <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
                     <p className="text-sm">No services selected</p>
                   </div>
@@ -691,26 +691,26 @@ export default function ServiceSelection({
               </div>
 
               {/* Drawer Footer Summary */}
-              <div className="border-t border-gray-100 p-4 bg-white z-10 relative">
-                <div className="mb-4 bg-gray-50 rounded-lg p-3">
+              <div className="border-t border-[var(--border)] p-4 bg-[var(--surface)] z-10 relative">
+                <div className="mb-4 bg-[var(--bg-soft)] rounded-xl p-3 border border-[var(--border)]">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-600 font-medium">{selectedServices.length} Services</span>
-                    <span className="text-sm font-bold text-[#8B0000]">{totalDuration} min</span>
+                    <span className="text-sm text-[var(--text-muted)] font-medium">{selectedServices.length} Services</span>
+                    <span className="text-sm font-bold text-[var(--primary)]">{totalDuration} min</span>
                   </div>
-                  <div className="flex justify-between items-center pt-2 border-t border-gray-200/60 mt-2">
-                    <span className="text-xs text-gray-500 font-medium">Timeline</span>
-                    <span className="text-xs text-gray-800 font-semibold">{overallStartTime} → {overallEndTime}</span>
+                  <div className="flex justify-between items-center pt-2 border-t border-[var(--border)] mt-2">
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Timeline</span>
+                    <span className="text-xs text-[var(--text)] font-semibold">{overallStartTime} to {overallEndTime}</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-sm text-gray-800 font-bold">Total Amount</span>
-                  <span className="text-xl font-bold text-[#8B0000]">₹{totalPrice.toLocaleString()}</span>
+                  <span className="text-sm text-[var(--text)] font-bold">Total Amount</span>
+                  <span className="text-xl font-bold text-[var(--primary)]">Rs. {totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setIsCartOpen(false)}
-                    className="flex-1 py-3 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors text-sm"
+                    className="flex-1 py-3 rounded-xl font-medium text-[var(--text-muted)] bg-[rgba(139,0,0,0.05)] hover:bg-[var(--border)] transition-colors text-sm"
                   >
                     Add More
                   </button>
@@ -719,8 +719,8 @@ export default function ServiceSelection({
                     disabled={selectedServices.length === 0}
                     className={`flex-[2] py-3 rounded-xl font-bold text-white text-sm transition-all shadow-md ${
                       selectedServices.length > 0
-                        ? "bg-[#8B0000] hover:bg-[#5C0000] shadow-sm"
-                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        ? "bg-[var(--primary)] hover:bg-[#5C0000] shadow-sm"
+                        : "bg-[var(--border)] text-[var(--text-subtle)] cursor-not-allowed"
                     }`}
                   >
                     Confirm & Continue

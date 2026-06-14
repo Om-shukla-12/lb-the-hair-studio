@@ -36,9 +36,9 @@ const STRAND_COLORS = [
   "#3D2B1F", "#8B5E3C", "#1A0A05", "#5C3317",
 ];
 
-const TOTAL_STRANDS = 22;
-const SCENE_WIDTH = 220;
-const SCENE_HEIGHT = 90;
+const TOTAL_STRANDS = 16;
+const SCENE_WIDTH = 132;
+const SCENE_HEIGHT = 54;
 const HAIR_TOP = 18; // y position of scissor cut line
 
 // Generate strand positions spread evenly — use deterministic heights (no Math.random → no SSR mismatch)
@@ -105,8 +105,8 @@ export default function ScissorsLoader({ message = "Loading..." }: { message?: s
   useEffect(() => {
     let frame: number;
     let startTime: number | null = null;
-    const DURATION = 2200; // ms per full left-to-right pass
-    const PAUSE = 600; // pause at end before restarting
+    const DURATION = 1450; // ms per full left-to-right pass
+    const PAUSE = 280; // pause at end before restarting
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
@@ -119,7 +119,7 @@ export default function ScissorsLoader({ message = "Loading..." }: { message?: s
         setScissorX(x);
 
         // Snipping: blade oscillates open/close rapidly
-        const snip = Math.sin(timestamp / 80) * 0.5 + 0.5;
+        const snip = Math.sin(timestamp / 62) * 0.5 + 0.5;
         setBladeOpen(snip);
 
         // Mark strands as cut as scissor passes over them
@@ -149,12 +149,12 @@ export default function ScissorsLoader({ message = "Loading..." }: { message?: s
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 select-none">
-      <div className="relative" style={{ width: SCENE_WIDTH, height: SCENE_HEIGHT + 40 }}>
+    <div className="flex select-none flex-col items-center justify-center py-4">
+      <div className="relative" style={{ width: SCENE_WIDTH, height: SCENE_HEIGHT + 26 }}>
         <svg
           width={SCENE_WIDTH}
-          height={SCENE_HEIGHT + 40}
-          viewBox={`0 0 ${SCENE_WIDTH} ${SCENE_HEIGHT + 40}`}
+          height={SCENE_HEIGHT + 26}
+          viewBox={`0 0 ${SCENE_WIDTH} ${SCENE_HEIGHT + 26}`}
           className="overflow-visible"
         >
           {/* ── HAIR STRANDS ── */}
@@ -252,7 +252,7 @@ export default function ScissorsLoader({ message = "Loading..." }: { message?: s
       </div>
 
       {/* Message */}
-      <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#8B0000]/70 mt-1 animate-pulse">
+      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#D4AF37]/80">
         {message}
       </p>
     </div>

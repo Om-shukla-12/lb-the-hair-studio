@@ -26,7 +26,7 @@ export default function Reviews() {
   return (
     <>
       <TopNavBar />
-      <main className="flex-grow pt-20 bg-[#FAF8F5]">
+      <main className="flex-grow pt-24 pb-16" style={{ background: "var(--bg)", color: "var(--text)" }}>
         {/* Hero */}
         <section className="relative py-20 bg-[#111111] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#6B0000]/30 via-transparent to-[#D4AF37]/10 pointer-events-none"></div>
@@ -68,7 +68,7 @@ export default function Reviews() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-[#E6E0DA] shadow-sm hover:shadow-lg transition-all duration-300"
+                className="bg-[var(--surface)] rounded-2xl p-8 border border-[#E6E0DA] shadow-sm hover:shadow-lg transition-all duration-300"
               >
                 {/* Stars */}
                 <div className="flex gap-1 mb-6">
@@ -78,12 +78,12 @@ export default function Reviews() {
                     </span>
                   ))}
                 </div>
-                <p className="text-[#111111] text-lg font-light leading-relaxed mb-8 italic">
+                <p className="text-[var(--text)] text-lg font-light leading-relaxed mb-8 italic">
                   "{t.quote}"
                 </p>
                 <div className="border-t border-[#E6E0DA] pt-4">
-                  <p className="font-bold text-[#111111] text-sm">{t.author}</p>
-                  <p className="text-[#5A5A5A] text-xs">{t.service}</p>
+                  <p className="font-bold text-[var(--text)] text-sm">{t.author}</p>
+                  <p className="text-[var(--text-muted)] text-xs">{t.service}</p>
                 </div>
               </motion.div>
             ))}

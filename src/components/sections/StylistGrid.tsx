@@ -14,7 +14,7 @@ export default function StylistGrid() {
         className="text-center mb-20"
       >
         <span className="text-xs text-[#D4AF37] tracking-[0.2em] uppercase mb-4 block font-bold">The Artisans</span>
-        <h2 className="font-serif text-3xl md:text-4xl text-[#111111] font-bold">Meet Our Lead Stylists</h2>
+        <h2 className="font-serif text-3xl md:text-4xl text-[var(--text)] font-bold">Meet Our Lead Stylists</h2>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[400px]">
@@ -33,7 +33,7 @@ export default function StylistGrid() {
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCVST3fG0EgVkv2KcQL8VdlKHLx6cQ3n814-ULTQlYBxM2M5LADCDMzxE9Eh1yHK1v42f76Zl4qS-f40gy-oblAFB2rS5sWKM3D5DMQDJhBvhfAr8117UQVdQkN6o__1VJfIG-TLM2vP2OObwDZuh9v-dnqmznA8gLFzTQREx_gi9wI2P0ZSBe68k7GO54etVy0WU89Fvh05fWcNqzwlaMsJzUz0qp0fsiKPWh0oKpr3d4h7cy6XBthNc3ohPLPuIuehXrFFiOIRA"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-          <GlassCard className="absolute bottom-0 left-0 p-8 m-4 w-[calc(100%-32px)] border-none bg-white/10 backdrop-blur-xl">
+          <GlassCard className="absolute bottom-0 left-0 p-8 m-4 w-[calc(100%-32px)] border-none bg-[var(--surface)]/10 backdrop-blur-xl">
             <h3 className="font-serif text-2xl text-white mb-2 font-bold">Elena Rostova</h3>
             <p className="text-xs text-[#D4AF37] tracking-widest uppercase mb-4 font-bold">Master Colorist & Founder</p>
             <p className="text-white/80 text-sm font-light max-w-xl">

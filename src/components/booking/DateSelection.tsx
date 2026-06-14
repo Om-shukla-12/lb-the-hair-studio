@@ -124,9 +124,10 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
 
   useEffect(() => {
     if (selectedDate && !isSameMonth(new Date(selectedDate), baseDate) && viewMode === 'month') {
-        setBaseDate(new Date(selectedDate));
+      const frame = requestAnimationFrame(() => setBaseDate(new Date(selectedDate)));
+      return () => cancelAnimationFrame(frame);
     }
-  }, [selectedDate, viewMode]);
+  }, [selectedDate, viewMode, baseDate]);
 
   // Status indicator color
   const getIndicatorColor = (statusLevel: string) => {
@@ -141,32 +142,30 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-[0_20px_40px_rgba(17,17,17,0.05)]"
+      className="luxury-card w-full max-w-4xl mx-auto p-4 md:p-5 rounded-lg"
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-3">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-[#111111] font-serif">Select Date</h2>
-          <p className="text-gray-500 mt-0.5 text-sm">Choose an available day for your appointment.</p>
+          <h2 className="text-2xl md:text-3xl font-semibold font-serif" style={{ color: 'var(--text)' }}>Select Date</h2>
+          <p className="mt-0.5 text-sm" style={{ color: 'var(--text-muted)' }}>Choose an available day for your appointment.</p>
         </div>
         
         <div className="flex items-center gap-2">
           {/* View Toggle */}
-          <div className="flex bg-[#F8F8F8] p-0.5 rounded-lg border border-gray-200">
+          <div className="flex p-0.5 rounded-md border" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
             <button
               onClick={() => setViewMode('week')}
-              className={`flex items-center px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                viewMode === 'week' ? 'bg-white text-[#8B0000] shadow-sm' : 'text-gray-500 hover:text-gray-900'
-              }`}
+              className={`flex items-center px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${viewMode === 'week' ? 'bg-[#8B0000] text-white shadow-sm' : ''}`}
+              style={viewMode !== 'week' ? { color: 'var(--text-muted)' } : {}}
             >
               <Rows3 className="w-3 h-3 mr-1" />
               Week
             </button>
             <button
               onClick={() => setViewMode('month')}
-              className={`flex items-center px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                viewMode === 'month' ? 'bg-white text-[#8B0000] shadow-sm' : 'text-gray-500 hover:text-gray-900'
-              }`}
+              className={`flex items-center px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${viewMode === 'month' ? 'bg-[#8B0000] text-white shadow-sm' : ''}`}
+              style={viewMode !== 'month' ? { color: 'var(--text-muted)' } : {}}
             >
               <LayoutGrid className="w-3 h-3 mr-1" />
               Month
@@ -174,23 +173,25 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center bg-white rounded-full border border-gray-200 shadow-sm px-1">
+          <div className="flex items-center rounded-md border shadow-sm px-1" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
             <button
               onClick={handlePrev}
               disabled={isPrevDisabled}
-              className={`p-1.5 rounded-full transition-colors ${
-                isPrevDisabled ? "opacity-30 cursor-not-allowed" : "hover:bg-gray-100 text-[#111111]"
+              className={`p-1.5 rounded-md transition-colors ${
+                isPrevDisabled ? "opacity-30 cursor-not-allowed" : "hover:bg-white/10"
               }`}
+              style={{ color: 'var(--text)' }}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="flex items-center font-medium text-xs px-2">
-              <CalendarIcon className="w-3 h-3 mr-1.5 text-[#8B0000]" />
+            <div className="flex items-center font-medium text-xs px-2" style={{ color: 'var(--text)' }}>
+              <CalendarIcon className="w-3 h-3 mr-1.5" style={{ color: 'var(--primary)' }} />
               {viewMode === 'week' ? format(startOfWeek(baseDate, { weekStartsOn: 1 }), "MMM yyyy") : format(baseDate, "MMMM yyyy")}
             </div>
             <button
               onClick={handleNext}
-              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors text-[#111111]"
+              className="p-1.5 rounded-md hover:bg-white/10 transition-colors"
+              style={{ color: 'var(--text)' }}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -199,14 +200,14 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
       </div>
 
       {/* Availability Legend */}
-      <div className="flex flex-wrap items-center gap-3 mb-4 px-3 py-2 rounded-xl bg-gray-50/70 border border-gray-100">
+      <div className="flex flex-wrap items-center gap-3 mb-4 px-3 py-2 rounded-md" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         {[
           { label: 'Plenty', color: 'bg-emerald-500' },
           { label: 'Filling Fast', color: 'bg-amber-500' },
           { label: 'Almost Full', color: 'bg-red-500' },
-          { label: 'Fully Booked', color: 'bg-gray-300' },
+          { label: 'Fully Booked', color: 'bg-gray-400' },
         ].map(({ label, color }) => (
-          <div key={label} className="flex items-center text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+          <div key={label} className="flex items-center text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-subtle)' }}>
             <span className={`w-2 h-2 rounded-full ${color} mr-1.5`} />
             {label}
           </div>
@@ -219,7 +220,7 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
         {viewMode === 'month' && (
           <div className="grid grid-cols-7 gap-1 mb-2 px-1 text-center">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-              <span key={day} className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{day}</span>
+              <span key={day} className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-subtle)' }}>{day}</span>
             ))}
           </div>
         )}
@@ -252,16 +253,16 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
                     disabled={!day.isAvailable}
                     className={`relative flex flex-col items-center justify-center rounded-xl transition-all duration-200 group
                       ${viewMode === 'week' ? 'py-3 px-1' : 'py-2 px-0.5'}
-                      ${!day.isAvailable
-                        ? 'opacity-40 cursor-not-allowed bg-gray-50 border border-gray-100'
-                        : isSelected
-                        ? 'bg-[#8B0000] text-white shadow-lg shadow-[#8B0000]/20 scale-[1.03]'
-                        : isDimmed
-                        ? 'bg-gray-50/50 text-gray-300 cursor-pointer hover:bg-gray-100'
-                        : 'bg-white border border-gray-100 hover:border-[#8B0000]/25 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
-                      }`}
+                      ${isSelected ? 'scale-[1.02]' : ''}
+                      ${!day.isAvailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:-translate-y-0.5'}
+                    `}
+                    style={{
+                      background: isSelected ? '#8B0000' : !day.isAvailable ? 'var(--surface)' : isDimmed ? 'var(--surface)' : 'var(--surface)',
+                      border: isSelected ? '1px solid rgba(139,0,0,0.6)' : '1px solid var(--border)',
+                      boxShadow: isSelected ? '0 6px 20px rgba(139,0,0,0.25)' : undefined,
+                      opacity: isDimmed ? 0.45 : undefined,
+                    }}
                   >
-                    {/* Selected background animation */}
                     {isSelected && (
                       <motion.div
                         layoutId="selectedDate"
@@ -271,37 +272,38 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
                       />
                     )}
 
-                    <span className={`relative z-10 flex flex-col items-center gap-0.5`}>
-                      {/* Day name */}
-                      <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${
-                        isSelected ? 'text-white/70' : 'text-gray-400'
-                      }`}>
+                    <span className="relative z-10 flex flex-col items-center gap-0.5">
+                      <span
+                        className={`text-[9px] font-bold uppercase tracking-widest leading-none`}
+                        style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : 'var(--text-subtle)' }}
+                      >
                         {viewMode === 'week' ? day.dayName : day.monthName}
                       </span>
                       
-                      {/* Date number */}
-                      <span className={`font-serif font-bold leading-none ${
-                        viewMode === 'week' ? 'text-xl md:text-2xl' : 'text-base md:text-lg'
-                      } ${isSelected ? 'text-white' : isDimmed ? 'text-gray-300' : 'text-[#111111]'}`}>
+                      <span
+                        className={`font-serif font-bold leading-none ${viewMode === 'week' ? 'text-xl md:text-2xl' : 'text-base md:text-lg'}`}
+                        style={{ color: isSelected ? '#fff' : 'var(--text)' }}
+                      >
                         {day.dayNumber}
                       </span>
 
-                      {/* Slots badge – week view only, shows available/total from API */}
                       {viewMode === 'week' && day.isAvailable && (
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
-                          isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                        }`}>
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none"
+                          style={{
+                            background: isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(139,0,0,0.10)',
+                            color: isSelected ? '#fff' : 'var(--primary)',
+                          }}
+                        >
                           {day.availableSlots}/{day.totalSlots}
                         </span>
                       )}
 
-                      {/* Lock for unavailable */}
                       {!day.isAvailable && viewMode === 'week' && (
-                        <Lock className="w-2.5 h-2.5 text-gray-400 mt-0.5" />
+                        <Lock className="w-2.5 h-2.5 mt-0.5" style={{ color: 'var(--text-subtle)' }} />
                       )}
                     </span>
 
-                    {/* Status dot */}
                     {day.isAvailable && !isSelected && (
                       <div className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${indicatorColor} ${isDimmed ? 'opacity-40' : ''}`} />
                     )}
@@ -314,15 +316,17 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
       </div>
 
       {/* Footer */}
-      <div className="flex justify-end pt-3 border-t border-gray-100">
+      <div className="flex justify-end pt-3" style={{ borderTop: '1px solid var(--border)' }}>
         <button
           onClick={onNext}
           disabled={!selectedDate}
-          className={`px-8 py-3 rounded-full text-white font-bold uppercase tracking-widest text-xs transition-all duration-300 ${
-            selectedDate
-              ? "bg-[#8B0000] hover:bg-[#5C0000] shadow-[0_8px_20px_rgba(139,0,0,0.2)] hover:shadow-[0_12px_25px_rgba(139,0,0,0.3)] hover:-translate-y-0.5"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
+          className="px-8 py-3 rounded-full text-white font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:-translate-y-0.5"
+          style={{
+            background: selectedDate ? '#8B0000' : 'var(--surface)',
+            color: selectedDate ? '#fff' : 'var(--text-subtle)',
+            cursor: selectedDate ? 'pointer' : 'not-allowed',
+            boxShadow: selectedDate ? '0 8px 20px rgba(139,0,0,0.22)' : undefined,
+          }}
         >
           Continue to Time
         </button>

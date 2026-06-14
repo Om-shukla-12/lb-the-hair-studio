@@ -1,109 +1,119 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+const features = [
+  {
+    icon: "verified",
+    title: "Certified Professionals",
+    desc: "Specialists trained in premium color, care, and finishing rituals.",
+  },
+  {
+    icon: "science",
+    title: "Professional Products",
+    desc: "Salon-grade color systems and treatments selected for lasting polish.",
+  },
+  {
+    icon: "workspace_premium",
+    title: "Bespoke Consultation",
+    desc: "Each appointment begins with a refined plan for your hair, routine, and occasion.",
+  },
+];
 
 export default function LorealPartnership() {
   return (
-    <section className="py-10 md:py-20 bg-[#FAF8F5] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <section className="px-4 py-10 md:px-8 md:py-16" style={{ background: "var(--bg-soft)" }}>
+      <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="relative bg-[#111111] rounded-2xl md:rounded-3xl overflow-hidden"
+          transition={{ duration: 0.75 }}
+          className="luxury-card relative overflow-hidden rounded-2xl"
         >
-          {/* Decorative blobs */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#6B0000]/20 via-transparent to-[#D4AF37]/10 pointer-events-none" />
-          <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-[#D4AF37]/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-36 h-36 md:w-48 md:h-48 bg-[#6B0000]/10 rounded-full blur-3xl -ml-8 -mb-8 pointer-events-none" />
+          {/* Subtle gradient overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "linear-gradient(135deg, rgba(139,0,0,0.06) 0%, transparent 50%, rgba(139,0,0,0.03) 100%)",
+            }}
+          />
 
-          <div className="relative z-10 p-6 md:p-16">
-            {/* Header row */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-1 h-6 md:h-8 bg-[#D4AF37] rounded-full flex-shrink-0" />
-              <span className="font-[family-name:var(--font-raleway)] text-[#D4AF37] text-[9px] md:text-[10px] uppercase tracking-[0.22em] font-bold">
-                Official Partnership
-              </span>
+          <div className="relative z-10 grid grid-cols-1 gap-8 p-5 md:grid-cols-2 md:p-10 lg:p-12">
+            {/* Left */}
+            <div>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="h-8 w-px" style={{ background: "var(--primary)" }} />
+                <span
+                  className="font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.24em]"
+                  style={{ color: "var(--accent-text)" }}
+                >
+                  Official Partnership
+                </span>
+              </div>
+
+              <h2
+                className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl"
+                style={{ color: "var(--text)" }}
+              >
+                Powered by{" "}
+                <span className="italic" style={{ color: "var(--primary)" }}>
+                  L&apos;Oreal Professionnel
+                </span>
+              </h2>
+
+              <p
+                className="mt-4 max-w-md text-sm font-light leading-relaxed md:text-base"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Professional products, precise consultation, and elevated finishing make every service feel considered from start to final reveal.
+              </p>
+
+              <Link
+                href="/booking"
+                className="btn-primary mt-6 inline-flex rounded-md px-5 py-3 font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.18em]"
+              >
+                Experience the Difference
+              </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-start">
-              {/* Left: Content */}
-              <div>
-                <motion.h2
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="font-[family-name:var(--font-cormorant)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-4 font-semibold leading-tight"
-                >
-                  Powered by{" "}
-                  <span className="italic text-[#D4AF37]">L'Oréal Professionnel</span>
-                </motion.h2>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="text-white/60 text-sm md:text-base font-light leading-relaxed mb-6 max-w-md"
-                >
-                  As an exclusive L'Oréal Professionnel partner, we use only the finest professional-grade products and techniques to deliver transformative results.
-                </motion.p>
-
+            {/* Right — feature list */}
+            <div className="space-y-3">
+              {features.map((feature, index) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  key={feature.title}
+                  initial={{ opacity: 0, x: 16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
+                  transition={{ duration: 0.5, delay: 0.12 + index * 0.08 }}
+                  className="flex items-start gap-3 rounded-xl p-3.5 transition-colors duration-300"
+                  style={{
+                    border: "1px solid var(--border)",
+                    background: "var(--surface)",
+                  }}
                 >
-                  <Link
-                    href="/booking"
-                    className="btn-primary inline-flex items-center px-6 py-3 rounded-full text-white text-[10px] uppercase tracking-[0.18em] font-semibold font-[family-name:var(--font-raleway)]"
+                  <div
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md"
+                    style={{ background: "rgba(139,0,0,0.10)" }}
                   >
-                    Experience the Difference
-                  </Link>
+                    <span className="material-symbols-outlined text-[18px]" style={{ color: "var(--primary)" }}>
+                      {feature.icon}
+                    </span>
+                  </div>
+                  <div>
+                    <h4
+                      className="font-[family-name:var(--font-raleway)] text-xs font-bold uppercase tracking-wide"
+                      style={{ color: "var(--text)" }}
+                    >
+                      {feature.title}
+                    </h4>
+                    <p className="mt-1 text-xs font-light leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                      {feature.desc}
+                    </p>
+                  </div>
                 </motion.div>
-              </div>
-
-              {/* Right: Feature cards */}
-              <div className="space-y-3">
-                {[
-                  {
-                    icon: "verified",
-                    title: "Certified Professionals",
-                    desc: "L'Oréal certified stylists trained in the latest techniques.",
-                  },
-                  {
-                    icon: "science",
-                    title: "Premium Formulations",
-                    desc: "Exclusive professional-grade color systems and treatments.",
-                  },
-                  {
-                    icon: "eco",
-                    title: "Sustainable Beauty",
-                    desc: "Committed to sustainability with L'Oréal's responsible program.",
-                  },
-                ].map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, x: 16 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                    className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors duration-300"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-[#D4AF37] text-[18px]">{feature.icon}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-[family-name:var(--font-raleway)] text-white font-bold text-xs mb-0.5 uppercase tracking-wide">{feature.title}</h4>
-                      <p className="text-white/50 text-xs font-light leading-relaxed">{feature.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </motion.div>
