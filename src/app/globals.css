@@ -244,10 +244,10 @@ header > div {
 }
 
 /* ─── MOBILE MENU ─── */
-.fixed.inset-0.z-40 {
+.fixed.z-40.backdrop-blur-2xl {
   background: rgba(15,15,16,0.96) !important;
 }
-[data-theme="light"] .fixed.inset-0.z-40 {
+[data-theme="light"] .fixed.z-40.backdrop-blur-2xl {
   background: rgba(249,247,243,0.98) !important;
 }
 

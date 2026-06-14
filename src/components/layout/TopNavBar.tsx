@@ -59,10 +59,10 @@ export default function TopNavBar() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6 }}
-              className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+              className="relative flex-shrink-0 pointer-events-none transition-transform duration-300 group-hover:scale-105"
             >
               <div
-                className="w-72 h-20 md:w-80 md:h-24 bg-[var(--primary)]"
+                className="w-72 h-20 md:w-96 md:h-24 bg-[var(--primary)]"
                 style={{
                   WebkitMaskImage: "url(/photos/lbthelogo.png)",
                   WebkitMaskSize: "contain",
@@ -157,7 +157,8 @@ export default function TopNavBar() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="theme-toggle flex h-9 w-9 items-center justify-center rounded-md border"
+              className="theme-toggle flex h-9 w-9 items-center justify-center rounded-md border transition-all duration-300"
+              style={{ border: "1px solid var(--border)", color: "var(--text)", background: "var(--surface)" }}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
             >
               {mounted ? <ThemeIcon className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -187,8 +188,11 @@ export default function TopNavBar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.22 }}
-            className="fixed inset-0 z-40 px-5 pt-24 backdrop-blur-2xl md:hidden"
-            style={{ background: isDark ? "rgba(15,15,16,0.97)" : "rgba(249,247,243,0.98)" }}
+            className="fixed left-0 right-0 bottom-0 z-40 px-5 pt-8 pb-8 backdrop-blur-2xl md:hidden"
+            style={{
+              top: "72px",
+              background: isDark ? "rgba(15,15,16,0.97)" : "rgba(249,247,243,0.98)",
+            }}
           >
             <nav className="mx-auto flex max-w-sm flex-col gap-2">
               {navLinks.map((link) => {
