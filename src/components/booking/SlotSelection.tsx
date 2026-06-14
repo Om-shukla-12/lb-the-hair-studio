@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useSlots, useBarbers } from "../../hooks/useBooking";
-import { Check, Clock, Sun, Sunset, Moon } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSlots } from "../../hooks/useBooking";
+import { Check, Clock, Sun, Sunset, Moon, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { TimeSlot } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
 
@@ -15,21 +15,28 @@ interface SlotSelectionProps {
   onBack: () => void;
 }
 
-const BADGE_COLORS = [
-  "bg-purple-100 text-purple-700 border-purple-200",
-  "bg-blue-100 text-blue-700 border-blue-200",
-  "bg-green-100 text-green-700 border-green-200",
-  "bg-[#D4AF37]/20 text-[#8B0000] border-[#D4AF37]/50",
-  "bg-pink-100 text-pink-700 border-pink-200",
-  "bg-orange-100 text-orange-700 border-orange-200",
-];
-
 /** Convert "HH:mm" (24h) → "h:mm AM/PM" (12h) */
 function to12h(time: string): string {
   const [h, m] = time.split(":").map(Number);
   const period = h < 12 ? "AM" : "PM";
   const hour = h % 12 || 12;
   return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+/** Color-code the staff badge using API's available_count vs total_count */
+function getStaffBadgeClass(availCount: number, totalCount: number, isSelected: boolean): string {
+  if (isSelected) return "bg-[#8B0000]/10 border-[#8B0000]/20 text-[#8B0000]";
+  if (availCount === 0) return "bg-gray-100 border-gray-200 text-gray-400";
+  if (availCount <= 1) return "bg-red-50 border-red-100 text-red-500";
+  if (availCount < totalCount) return "bg-amber-50 border-amber-100 text-amber-600";
+  return "bg-green-50 border-green-100 text-green-600";
+}
+
+interface PeriodGroup {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  slots: TimeSlot[];
 }
 
 export default function SlotSelection({
@@ -40,105 +47,111 @@ export default function SlotSelection({
   onBack,
 }: SlotSelectionProps) {
   const { data: slots, isLoading: loadingSlots, isError } = useSlots(selectedDate);
-  const { data: barbers } = useBarbers();
   const continueRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to Continue button when a time is selected
+  // Auto-open the period containing the selected time; default open first period with slots
+  const [expandedPeriod, setExpandedPeriod] = useState<string | null>(null);
+
+  // Auto-scroll to Continue when a time is selected
   useEffect(() => {
     if (selectedTime && continueRef.current) {
       continueRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [selectedTime]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.04 } },
+  // Build period groups from API data
+  const periods: PeriodGroup[] = slots
+    ? [
+        { key: "morning", label: "Morning", icon: <Sun className="w-4 h-4 text-amber-500" />, slots: slots.morning },
+        { key: "afternoon", label: "Afternoon", icon: <Sunset className="w-4 h-4 text-orange-500" />, slots: slots.afternoon },
+        { key: "evening", label: "Evening", icon: <Moon className="w-4 h-4 text-indigo-500" />, slots: slots.evening },
+      ].filter((p) => p.slots && p.slots.length > 0)
+    : [];
+
+  // Auto-expand: if a time is already selected, open that period; else open first available period
+  useEffect(() => {
+    if (!slots || periods.length === 0) return;
+    if (expandedPeriod !== null) return; // user already made a choice
+
+    if (selectedTime) {
+      const containing = periods.find((p) => p.slots.some((s) => s.time === selectedTime));
+      if (containing) { setExpandedPeriod(containing.key); return; }
+    }
+    // Open first period that has any available slot
+    const firstAvailable = periods.find((p) => p.slots.some((s) => !s.is_past && s.available_count > 0));
+    setExpandedPeriod(firstAvailable?.key ?? periods[0]?.key ?? null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slots]);
+
+  const togglePeriod = (key: string) => {
+    setExpandedPeriod((prev) => (prev === key ? null : key));
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 8 },
-    show: { opacity: 1, y: 0 },
-  };
+  const renderSlotGrid = (timeSlots: TimeSlot[]) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4">
+      {timeSlots.map((slot, idx) => {
+        // Use API fields directly: available_count and total_count
+        const isAvailable = !slot.is_past && slot.available_count > 0;
+        const isSelected = selectedTime === slot.time;
 
-  const getInitials = (name: string) => name.charAt(0).toUpperCase();
+        return (
+          <motion.button
+            key={slot.time + idx}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18, delay: idx * 0.03 }}
+            onClick={() => isAvailable && onSelectTime(slot.time)}
+            disabled={!isAvailable}
+            className={`relative flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all duration-200 ${
+              !isAvailable
+                ? "opacity-45 cursor-not-allowed bg-gray-50 border-transparent text-gray-400"
+                : isSelected
+                ? "border-[#8B0000] bg-[#8B0000]/5 shadow-md scale-[1.03]"
+                : "border-transparent bg-white shadow-sm hover:border-[#8B0000]/25 hover:shadow-md hover:-translate-y-0.5"
+            }`}
+          >
+            {/* Time */}
+            <span
+              className={`font-bold text-sm leading-tight mb-2 ${
+                isSelected ? "text-[#8B0000]" : isAvailable ? "text-[#111111]" : "text-gray-400"
+              }`}
+            >
+              {to12h(slot.time)}
+            </span>
 
-  const activeBarbers = useMemo(() => {
-    return (barbers || []).filter((b) => b.is_active);
-  }, [barbers]);
-
-  const renderSlotGrid = (timeSlots: TimeSlot[], icon: React.ReactNode, title: string) => {
-    if (!timeSlots || timeSlots.length === 0) return null;
-
-    return (
-      <div className="mb-4">
-        <div className="flex items-center mb-2 text-[#111111]">
-          {icon}
-          <h3 className="ml-1.5 text-sm font-semibold font-serif">{title}</h3>
-        </div>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
-        >
-          {timeSlots.map((slot, idx) => {
-            const isAvailable = !slot.is_past && slot.available_count > 0;
-            const isSelected = selectedTime === slot.time;
-            const availableStaff = activeBarbers.slice(0, slot.available_count);
-
-            return (
-              <motion.button
-                variants={itemVariants}
-                key={slot.time + idx}
-                onClick={() => isAvailable && onSelectTime(slot.time)}
-                disabled={!isAvailable}
-                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl border-2 transition-all duration-200 ${
-                  !isAvailable
-                    ? "opacity-50 cursor-not-allowed bg-gray-50 border-transparent text-gray-400"
-                    : isSelected
-                    ? "border-[#8B0000] bg-[#8B0000]/5 text-[#8B0000] shadow-md scale-[1.02]"
-                    : "border-transparent bg-white shadow-sm hover:border-[#8B0000]/25 hover:shadow-md text-[#111111] hover:-translate-y-0.5"
-                }`}
+            {/* Staff count badge — using API's available_count / total_count directly */}
+            {isAvailable ? (
+              <div
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStaffBadgeClass(
+                  slot.available_count,
+                  slot.total_count,
+                  isSelected
+                )}`}
               >
-                {/* Time in 12h format */}
-                <span className={`font-bold text-sm leading-tight mb-1 ${isSelected ? 'text-[#8B0000]' : isAvailable ? 'text-[#111111]' : 'text-gray-400'}`}>
-                  {to12h(slot.time)}
-                </span>
+                <Users className="w-2.5 h-2.5 flex-shrink-0" />
+                <span>{slot.available_count}/{slot.total_count} slots</span>
+              </div>
+            ) : (
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-gray-400">
+                {slot.is_past ? "Past" : "Full"}
+              </span>
+            )}
 
-                {/* Staff initials */}
-                {isAvailable ? (
-                  <div className="flex items-center justify-center gap-0.5 flex-wrap">
-                    {availableStaff.map((staff, sIdx) => (
-                      <span
-                        key={staff.id}
-                        className={`flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold border ${BADGE_COLORS[sIdx % BADGE_COLORS.length]}`}
-                        title={staff.full_name}
-                      >
-                        {getInitials(staff.full_name)}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-[9px] font-semibold uppercase tracking-wider text-gray-400">Unavailable</span>
-                )}
-
-                {/* Selected checkmark */}
-                {isSelected && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#8B0000] rounded-full flex items-center justify-center text-white shadow"
-                  >
-                    <Check size={10} strokeWidth={3} />
-                  </motion.div>
-                )}
-              </motion.button>
-            );
-          })}
-        </motion.div>
-      </div>
-    );
-  };
+            {/* Selected checkmark */}
+            {isSelected && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#8B0000] rounded-full flex items-center justify-center text-white shadow"
+              >
+                <Check size={10} strokeWidth={3} />
+              </motion.div>
+            )}
+          </motion.button>
+        );
+      })}
+    </div>
+  );
 
   return (
     <motion.div
@@ -147,10 +160,11 @@ export default function SlotSelection({
       exit={{ opacity: 0, x: -20 }}
       className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-[0_20px_40px_rgba(17,17,17,0.05)]"
     >
+      {/* Header */}
       <div className="mb-4">
         <h2 className="text-xl md:text-2xl font-bold text-[#111111] font-serif">Select Time</h2>
-        <p className="text-gray-500 mt-0.5 text-sm flex items-center">
-          <Clock className="w-3.5 h-3.5 mr-1.5" />
+        <p className="text-gray-500 mt-0.5 text-sm flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5" />
           Availability for{" "}
           {new Date(selectedDate).toLocaleDateString(undefined, {
             weekday: "long",
@@ -158,8 +172,29 @@ export default function SlotSelection({
             day: "numeric",
           })}
         </p>
+
+        {/* Legend */}
+        <div className="flex items-center gap-3 mt-2 flex-wrap">
+          <span className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
+            <Users className="w-3 h-3" />
+            Staff available / total (from API)
+          </span>
+          <span className="flex items-center gap-1 text-[10px]">
+            <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+            <span className="text-gray-400">All free</span>
+          </span>
+          <span className="flex items-center gap-1 text-[10px]">
+            <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+            <span className="text-gray-400">Partially booked</span>
+          </span>
+          <span className="flex items-center gap-1 text-[10px]">
+            <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
+            <span className="text-gray-400">Almost full</span>
+          </span>
+        </div>
       </div>
 
+      {/* Accordion content */}
       <div className="min-h-[280px]">
         {loadingSlots ? (
           <div className="flex justify-center items-center py-16">
@@ -169,12 +204,76 @@ export default function SlotSelection({
           <div className="text-center text-red-500 py-6 bg-red-50 rounded-2xl border border-red-100 text-sm">
             Failed to load time slots. Please try again.
           </div>
-        ) : slots ? (
-          <>
-            {renderSlotGrid(slots.morning, <Sun className="w-4 h-4 text-amber-500" />, "Morning")}
-            {renderSlotGrid(slots.afternoon, <Sunset className="w-4 h-4 text-orange-500" />, "Afternoon")}
-            {renderSlotGrid(slots.evening, <Moon className="w-4 h-4 text-indigo-500" />, "Evening")}
-          </>
+        ) : periods.length > 0 ? (
+          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm divide-y divide-gray-100">
+            {periods.map((period) => {
+              const isExpanded = expandedPeriod === period.key;
+              const availableInPeriod = period.slots.filter((s) => !s.is_past && s.available_count > 0).length;
+              const totalInPeriod = period.slots.length;
+              const selectedInPeriod = period.slots.some((s) => s.time === selectedTime);
+
+              return (
+                <div
+                  key={period.key}
+                  className={`bg-white transition-all duration-200 ${selectedInPeriod ? "border-l-4 border-l-[#D4AF37]" : ""}`}
+                >
+                  {/* Period header — clickable to toggle */}
+                  <button
+                    onClick={() => togglePeriod(period.key)}
+                    className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${
+                      selectedInPeriod ? "bg-[#8B0000]/5 hover:bg-[#8B0000]/8" : "bg-white hover:bg-gray-50/80"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {selectedInPeriod && (
+                        <span className="w-4 h-4 rounded-full bg-[#8B0000] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">
+                          ✓
+                        </span>
+                      )}
+                      {period.icon}
+                      <h3 className={`text-xs font-bold tracking-widest uppercase ${selectedInPeriod ? "text-[#8B0000]" : "text-[#111111]"}`}>
+                        {period.label}
+                      </h3>
+                      {/* Available slots in this period */}
+                      <span className="text-[10px] text-gray-400 font-medium">
+                        {availableInPeriod}/{totalInPeriod} slots open
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {/* Selected time badge */}
+                      {selectedInPeriod && selectedTime && (
+                        <span className="text-[10px] font-semibold text-[#8B0000] bg-[#8B0000]/10 px-2 py-0.5 rounded-full">
+                          {to12h(selectedTime)}
+                        </span>
+                      )}
+                      {isExpanded
+                        ? <ChevronUp className={`w-4 h-4 ${selectedInPeriod ? "text-[#8B0000]" : "text-gray-400"}`} />
+                        : <ChevronDown className={`w-4 h-4 ${selectedInPeriod ? "text-[#8B0000]" : "text-gray-400"}`} />
+                      }
+                    </div>
+                  </button>
+
+                  {/* Slots grid — accordion body */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="bg-gray-50/50 border-t border-gray-100">
+                          {renderSlotGrid(period.slots)}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <div className="text-center text-gray-500 py-10 bg-gray-50 rounded-2xl border border-gray-100">
             <p className="text-base font-medium text-[#111111]">No slots available for this date.</p>
@@ -183,6 +282,7 @@ export default function SlotSelection({
         )}
       </div>
 
+      {/* Footer nav */}
       <div ref={continueRef} className="flex justify-between mt-6 pt-4 border-t border-gray-100">
         <button
           onClick={onBack}

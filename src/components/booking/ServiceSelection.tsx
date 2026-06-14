@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useServices, useBarbers, useSlots } from "../../hooks/useBooking";
+import { useServices, useBarbers, useSlots, useStaffAvailability } from "../../hooks/useBooking";
 import { Search, Clock, Check, ChevronDown, ChevronUp, ShoppingBag, X, Trash2, User } from "lucide-react";
 import { Service, Barber } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
@@ -31,6 +31,9 @@ export default function ServiceSelection({
   const { data: services, isLoading, isError } = useServices();
   const { data: barbers } = useBarbers();
   const { data: slots } = useSlots(selectedDate);
+  
+  const allServiceIds = useMemo(() => services?.map(s => s.id) || [], [services]);
+  const { data: availableStaff } = useStaffAvailability(selectedDate, selectedTime, allServiceIds);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("All");
@@ -41,19 +44,39 @@ export default function ServiceSelection({
   // Active barbers
   const activeBarbers = useMemo(() => (barbers || []).filter((b) => b.is_active), [barbers]);
 
-  // Available barbers for selected time slot
+  // Available barbers for selected time slot — from staff-availability API
   const availableBarberIds = useMemo(() => {
-    if (!slots || !selectedTime) return new Set<string>();
+    if (!availableStaff) return new Set<string>();
+    return new Set(availableStaff.map((b) => b.id));
+  }, [availableStaff]);
+
+  // Total count from API slot
+  const slotTotalCount = useMemo(() => {
+    if (!slots || !selectedTime) return activeBarbers.length;
     const allSlots = [...slots.morning, ...slots.afternoon, ...slots.evening];
     const targetSlot = allSlots.find((s) => s.time === selectedTime);
-    if (targetSlot && targetSlot.available_count > 0) {
-      const available = activeBarbers.slice(0, targetSlot.available_count);
-      return new Set(available.map((b) => b.id));
-    }
-    return new Set<string>();
+    return targetSlot?.total_count ?? activeBarbers.length;
   }, [slots, selectedTime, activeBarbers]);
 
   const anyStaffAvailable = availableBarberIds.size > 0;
+
+  /**
+   * For a given service, a barber is available if:
+   * 1. They are within the API's available_count for this slot
+   * Note: service_ids being empty means the barber serves ALL services (API design)
+   * We do NOT add a 'no-service' filter since all barbers have empty service_ids.
+   */
+  const isBarberAvailable = (barberId: string): boolean => {
+    return availableBarberIds.has(barberId);
+  };
+
+  /**
+   * Count available barbers for a service using the API's available_count.
+   * Since all barbers serve all services (empty service_ids), this equals availableBarberIds.size
+   */
+  const countAvailableForService = (): number => {
+    return availableBarberIds.size;
+  };
 
   // Categories
   const categories = useMemo(() => {
@@ -306,50 +329,63 @@ export default function ServiceSelection({
                                       transition={{ duration: 0.2 }}
                                       className="overflow-hidden"
                                     >
-                                      <div className="px-4 pb-2.5 pt-1 bg-[#8B0000]/3 border-t border-[#8B0000]/8">
-                                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-1.5">Preferred Stylist</p>
-                                        <div className="flex flex-wrap gap-1.5" onClick={(e) => e.stopPropagation()}>
-                                          {/* Any Staff tag */}
-                                          <button
-                                            onClick={() => anyStaffAvailable && onSetBarberForService(service.id, null)}
-                                            disabled={!anyStaffAvailable}
-                                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
-                                              !anyStaffAvailable
-                                                ? "opacity-40 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400"
-                                                : selectedBarberId === null
-                                                ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
-                                                : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
-                                            }`}
-                                          >
-                                            <span className="flex items-center gap-1">
-                                              <User className="w-2.5 h-2.5" />
-                                              Any Staff
+                                        <div className="px-4 pb-3 pt-1.5 bg-[#8B0000]/3 border-t border-[#8B0000]/8">
+                                          {/* Stylist header with available count from API */}
+                                          <div className="flex items-center justify-between mb-2">
+                                            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Preferred Stylist</p>
+                                            <span className="text-[10px] text-gray-400 font-medium">
+                                              {countAvailableForService()}/{slotTotalCount} slots available
                                             </span>
-                                          </button>
+                                          </div>
+                                          <div className="flex flex-wrap gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                            {/* Any Staff tag */}
+                                            <button
+                                              onClick={() => anyStaffAvailable && onSetBarberForService(service.id, null)}
+                                              disabled={!anyStaffAvailable}
+                                              title={!anyStaffAvailable ? "No staff available at this time" : ""}
+                                              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
+                                                !anyStaffAvailable
+                                                  ? "opacity-40 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400"
+                                                  : selectedBarberId === null
+                                                  ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
+                                                  : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
+                                              }`}
+                                            >
+                                              <span className="flex items-center gap-1">
+                                                <User className="w-2.5 h-2.5" />
+                                                Any Available
+                                              </span>
+                                            </button>
 
-                                          {/* Specific barber tags */}
-                                          {activeBarbers.map((barber) => {
-                                            const isAvail = availableBarberIds.has(barber.id);
-                                            const isChosen = selectedBarberId === barber.id;
-                                            return (
-                                              <button
-                                                key={barber.id}
-                                                onClick={() => isAvail && onSetBarberForService(service.id, barber.id)}
-                                                disabled={!isAvail}
-                                                className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
-                                                  !isAvail
-                                                    ? "opacity-40 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400"
-                                                    : isChosen
-                                                    ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
-                                                    : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
-                                                }`}
-                                              >
-                                                {barber.full_name}
-                                              </button>
-                                            );
-                                          })}
+                                            {/* Specific barber tags — grayed if not within API's available_count */}
+                                            {activeBarbers.map((barber) => {
+                                              const isAvail = isBarberAvailable(barber.id);
+                                              const isChosen = selectedBarberId === barber.id;
+                                              return (
+                                                <button
+                                                  key={barber.id}
+                                                  onClick={() => isAvail && onSetBarberForService(service.id, barber.id)}
+                                                  disabled={!isAvail}
+                                                  title={!isAvail ? `${barber.full_name} is not available at this time` : ""}
+                                                  className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
+                                                    !isAvail
+                                                      ? "opacity-40 cursor-not-allowed bg-gray-50 border-dashed border-gray-200 text-gray-400"
+                                                      : isChosen
+                                                      ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
+                                                      : "bg-white text-gray-600 border-gray-200 hover:border-[#8B0000]/40 hover:text-[#8B0000]"
+                                                  }`}
+                                                >
+                                                  <span className="flex items-center gap-1">
+                                                    {barber.full_name}
+                                                    {!isAvail && (
+                                                      <span className="text-[8px] font-normal text-gray-400 ml-0.5">✕ busy</span>
+                                                    )}
+                                                  </span>
+                                                </button>
+                                              );
+                                            })}
+                                          </div>
                                         </div>
-                                      </div>
                                     </motion.div>
                                   )}
                                 </AnimatePresence>

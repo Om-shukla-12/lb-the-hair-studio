@@ -11,12 +11,14 @@ import { Plus, ChevronUp } from "lucide-react";
 const formSchema = z.object({
   firstName: z.string().min(2, "Full name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
+  email: z.string().email("Enter a valid email").optional().or(z.literal("")),
   notes: z.string().optional(),
 });
 
 type FormData = {
   firstName: string;
   phone: string;
+  email?: string;
   notes?: string;
 };
 
@@ -39,11 +41,10 @@ export default function CustomerForm({ onSubmit, onBack, isSubmitting }: Custome
   });
 
   const handleFormSubmit = (data: FormData) => {
-    // Fill in blanks for removed fields so API payload stays complete
     onSubmit({
       firstName: data.firstName,
       lastName: "",
-      email: "",
+      email: data.email && data.email.trim() !== "" ? data.email.trim() : "",
       phone: data.phone,
       notes: data.notes || "",
     });
@@ -107,6 +108,30 @@ export default function CustomerForm({ onSubmit, onBack, isSubmitting }: Custome
           </label>
           {errors.phone && (
             <p className="text-xs text-red-500 mt-1 ml-1">{errors.phone.message}</p>
+          )}
+        </div>
+
+        {/* Email (optional) */}
+        <div className="relative">
+          <input
+            type="email"
+            id="email"
+            {...register("email")}
+            className={`peer block w-full px-4 pt-5 pb-2 text-sm text-[#111111] bg-[#F8F8F8] border-2 rounded-xl appearance-none focus:outline-none focus:ring-0 focus:bg-white transition-all duration-200 ${
+              errors.email ? "border-red-400 focus:border-red-400" : "border-transparent focus:border-[#8B0000]"
+            }`}
+            placeholder=" "
+          />
+          <label
+            htmlFor="email"
+            className={`absolute text-xs duration-200 transform -translate-y-2.5 scale-90 top-3.5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-2.5 font-medium ${
+              errors.email ? "text-red-500" : "text-gray-500 peer-focus:text-[#8B0000]"
+            }`}
+          >
+            Email <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          {errors.email && (
+            <p className="text-xs text-red-500 mt-1 ml-1">{errors.email.message}</p>
           )}
         </div>
 

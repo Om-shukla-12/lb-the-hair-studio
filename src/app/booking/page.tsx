@@ -65,25 +65,23 @@ export default function BookingPage() {
 
     try {
       const bookings: BookingPayload[] = selectedServices.map((serviceId) => ({
-        date: selectedDate,
-        time: selectedTime,
         service_id: serviceId,
-        barber_id: selectedBarbers[serviceId] ?? null,
-        customer: {
-          first_name: customer.firstName,
-          last_name: customer.lastName || "",
-          email: customer.email || "",
-          phone: customer.phone,
-          notes: customer.notes,
-        },
+        employee_id: selectedBarbers[serviceId] ?? null,
+        customer_name: `${customer.firstName} ${customer.lastName || ""}`.trim(),
+        // API rejects empty string for email — send null when not provided
+        customer_email: customer.email && customer.email.trim() !== "" ? customer.email.trim() : null,
+        customer_phone: customer.phone,
+        start_time: `${selectedDate}T${selectedTime}:00`,
+        notes: customer.notes && customer.notes.trim() !== "" ? customer.notes.trim() : null,
       }));
 
       const payload: BulkBookingPayload = { bookings };
+      console.log("SENDING PAYLOAD:", JSON.stringify(payload, null, 2));
       await createBooking.mutateAsync(payload);
       setIsSuccessModalOpen(true);
-    } catch (error) {
-      console.error("Booking failed:", error);
-      alert("Failed to create booking. Please try again.");
+    } catch (error: any) {
+      console.error("Booking failed:", error.response?.data || error);
+      alert(`Failed to create booking. Error: ${JSON.stringify(error.response?.data || error.message)}`);
     }
   };
 

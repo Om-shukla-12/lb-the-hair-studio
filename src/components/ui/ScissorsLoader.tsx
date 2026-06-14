@@ -41,11 +41,12 @@ const SCENE_WIDTH = 220;
 const SCENE_HEIGHT = 90;
 const HAIR_TOP = 18; // y position of scissor cut line
 
-// Generate strand positions spread evenly
+// Generate strand positions spread evenly — use deterministic heights (no Math.random → no SSR mismatch)
 const STRANDS = Array.from({ length: TOTAL_STRANDS }, (_, i) => ({
   x: 10 + (i * (SCENE_WIDTH - 20)) / (TOTAL_STRANDS - 1),
   color: STRAND_COLORS[i % STRAND_COLORS.length],
-  fullHeight: HAIR_TOP + 20 + Math.random() * 18, // hair length below cut
+  // Deterministic pseudo-random height variation based on index
+  fullHeight: HAIR_TOP + 20 + ((i * 13 + i * i * 3) % 18),
 }));
 
 // SVG Scissors component — two blades that open/close

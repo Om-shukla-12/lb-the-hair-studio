@@ -4,6 +4,7 @@ import {
   getSlots,
   getServices,
   getBarbers,
+  getStaffAvailability,
   createBooking,
 } from '../api/bookingApi';
 import { BookingPayload, BulkBookingPayload } from '../types/booking';
@@ -41,6 +42,16 @@ export const useBarbers = () => {
     queryKey: ['barbers'],
     queryFn: getBarbers,
     staleTime: 1000 * 60 * 30, // 30 minutes
+    retry: 2,
+  });
+};
+
+export const useStaffAvailability = (date: string | null, startTime: string | null, serviceIds: string[]) => {
+  return useQuery({
+    queryKey: ['staffAvailability', date, startTime, serviceIds.join(',')],
+    queryFn: () => getStaffAvailability(date!, startTime!, serviceIds.join(',')),
+    enabled: !!date && !!startTime && serviceIds.length > 0,
+    staleTime: 1000 * 60 * 2, // 2 minutes
     retry: 2,
   });
 };

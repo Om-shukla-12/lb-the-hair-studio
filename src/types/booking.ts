@@ -61,16 +61,12 @@ export interface CustomerDetails {
 
 export interface BookingPayload {
   service_id: string;
-  barber_id: string | null;
-  date: string;
-  time: string;
-  customer: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    notes?: string;
-  };
+  employee_id?: string | null;
+  customer_name: string;
+  customer_email: string | null;     // null is OK; empty string causes 422
+  customer_phone: string;
+  start_time: string;
+  notes?: string | null;
 }
 
 export interface BulkBookingPayload {

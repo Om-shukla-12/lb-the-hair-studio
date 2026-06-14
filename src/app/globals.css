@@ -37,15 +37,15 @@
   --spacing-margin-desktop: 80px;
 
   --font-body-lg: var(--font-inter);
-  --font-label-sm: var(--font-inter);
-  --font-headline-md: var(--font-playfair);
-  --font-headline-lg-mobile: var(--font-playfair);
-  --font-headline-lg: var(--font-playfair);
+  --font-label-sm: var(--font-raleway);
+  --font-headline-md: var(--font-cormorant);
+  --font-headline-lg-mobile: var(--font-cormorant);
+  --font-headline-lg: var(--font-cormorant);
   --font-body-md: var(--font-inter);
-  --font-display-lg: var(--font-playfair);
+  --font-display-lg: var(--font-cormorant);
   
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-raleway);
+  --font-serif: var(--font-cormorant);
 }
 
 @layer utilities {
@@ -117,12 +117,26 @@ html, body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
+  font-family: var(--font-cormorant), 'Playfair Display', serif;
+  letter-spacing: 0.01em;
+}
+
+h4, h5, h6 {
   font-family: var(--font-playfair), serif;
 }
 
-p, a, span, div, button, input {
+p, span, div, button, input, textarea {
   font-family: var(--font-inter), sans-serif;
+}
+
+a {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+nav a, .nav-link {
+  font-family: var(--font-raleway), sans-serif;
+  letter-spacing: 0.08em;
 }
 
 /* Smooth scrolling */

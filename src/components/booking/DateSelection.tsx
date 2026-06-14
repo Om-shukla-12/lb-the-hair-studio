@@ -62,14 +62,18 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
       const dayAvailability = availability?.find((a) => a.date === dateStr);
       
       const isPast = isBefore(startOfDay(date), startOfDay(new Date()));
-      const slotsCount = dayAvailability?.available_slots || 0;
-      const isAvailable = !isPast && dayAvailability && dayAvailability.status !== 'closed' && slotsCount > 0;
+      // Use API's available_slots and total_slots directly
+      const availableSlots = dayAvailability?.available_slots ?? 0;
+      const totalSlots = dayAvailability?.total_slots ?? 0;
+      const isAvailable = !isPast && dayAvailability && dayAvailability.status !== 'closed' && availableSlots > 0;
       const isCurrentMonth = isSameMonth(date, baseDate);
 
+      // Status level based on API's available_slots vs total_slots ratio
       let statusLevel = 'full';
-      if (isAvailable) {
-        if (slotsCount >= 15) statusLevel = 'plenty';
-        else if (slotsCount >= 6) statusLevel = 'filling';
+      if (isAvailable && totalSlots > 0) {
+        const ratio = availableSlots / totalSlots;
+        if (ratio >= 0.7) statusLevel = 'plenty';
+        else if (ratio >= 0.3) statusLevel = 'filling';
         else statusLevel = 'almost';
       }
 
@@ -81,7 +85,8 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
         dayName: format(date, "EEE"),
         dayNumber: format(date, "d"),
         monthName: format(date, "MMM"),
-        slotsCount,
+        availableSlots,
+        totalSlots,
         statusLevel
       };
     });
@@ -281,12 +286,12 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
                         {day.dayNumber}
                       </span>
 
-                      {/* Slots badge – week view only */}
+                      {/* Slots badge – week view only, shows available/total from API */}
                       {viewMode === 'week' && day.isAvailable && (
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
                           isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
                         }`}>
-                          {day.slotsCount}
+                          {day.availableSlots}/{day.totalSlots}
                         </span>
                       )}
 

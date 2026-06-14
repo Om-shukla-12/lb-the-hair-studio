@@ -32,13 +32,24 @@ export const getServices = async (): Promise<Service[]> => {
 };
 
 export const getBarbers = async (): Promise<Barber[]> => {
-  const { data } = await apiClient.get<Barber[]>(`/v1/public/booking/barbers`);
+  const { data } = await apiClient.get<Barber[]>(`/v1/public/booking/staff`);
+  return data;
+};
+
+export const getStaffAvailability = async (
+  date: string,
+  startTime: string,
+  serviceIds: string
+): Promise<Barber[]> => {
+  const { data } = await apiClient.get<Barber[]>(`/v1/public/booking/staff-availability`, {
+    params: { date, start_time: startTime, service_ids: serviceIds },
+  });
   return data;
 };
 
 export const createBooking = async (payload: BookingPayload | BulkBookingPayload): Promise<any> => {
   if ('bookings' in payload) {
-    const { data } = await apiClient.post(`/v1/public/booking/bookings/bulk`, payload.bookings);
+    const { data } = await apiClient.post(`/v1/public/booking/bookings/bulk`, payload);
     return data;
   } else {
     const { data } = await apiClient.post(`/v1/public/booking/bookings`, payload);
