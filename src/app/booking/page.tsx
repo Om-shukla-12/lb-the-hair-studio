@@ -11,8 +11,9 @@ import SlotSelection from "@/components/booking/SlotSelection";
 import ServiceSelection from "@/components/booking/ServiceSelection";
 import CustomerForm from "@/components/booking/CustomerForm";
 import SuccessModal from "@/components/booking/SuccessModal";
-import { useCreateBooking } from "@/hooks/useBooking";
+import { useCreateBooking, useServices } from "@/hooks/useBooking";
 import { CustomerDetails, BulkBookingPayload, BookingPayload } from "@/types/booking";
+import { addMinutesToTime } from "@/lib/time";
 
 const STEPS = ["Date", "Time", "Services", "Details"];
 
@@ -26,6 +27,7 @@ export default function BookingPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const createBooking = useCreateBooking();
+  const { data: servicesData } = useServices();
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
@@ -60,20 +62,31 @@ export default function BookingPage() {
     setSelectedBarbers((prev) => ({ ...prev, [serviceId]: barberId }));
   };
 
+  const reorderServices = (newOrder: string[]) => {
+    setSelectedServices(newOrder);
+  };
+
   const handleBookingSubmit = async (customer: CustomerDetails) => {
     if (!selectedDate || !selectedTime || selectedServices.length === 0) return;
 
     try {
-      const bookings: BookingPayload[] = selectedServices.map((serviceId) => ({
-        service_id: serviceId,
-        employee_id: selectedBarbers[serviceId] ?? null,
-        customer_name: `${customer.firstName} ${customer.lastName || ""}`.trim(),
-        // API rejects empty string for email — send null when not provided
-        customer_email: customer.email && customer.email.trim() !== "" ? customer.email.trim() : null,
-        customer_phone: customer.phone,
-        start_time: `${selectedDate}T${selectedTime}:00`,
-        notes: customer.notes && customer.notes.trim() !== "" ? customer.notes.trim() : null,
-      }));
+      // Build sequential start times: each service starts when the previous one ends
+      let currentTime = selectedTime;
+      const bookings: BookingPayload[] = selectedServices.map((serviceId) => {
+        const service = servicesData?.find((s) => s.id === serviceId);
+        const duration = service?.duration_minutes ?? 60; // fallback 60min
+        const thisStartTime = currentTime;
+        currentTime = addMinutesToTime(currentTime, duration);
+        return {
+          service_id: serviceId,
+          employee_id: selectedBarbers[serviceId] ?? null,
+          customer_name: `${customer.firstName} ${customer.lastName || ""}`.trim(),
+          customer_email: customer.email && customer.email.trim() !== "" ? customer.email.trim() : null,
+          customer_phone: customer.phone,
+          start_time: `${selectedDate}T${thisStartTime}:00`,
+          notes: customer.notes && customer.notes.trim() !== "" ? customer.notes.trim() : null,
+        };
+      });
 
       const payload: BulkBookingPayload = { bookings };
       console.log("SENDING PAYLOAD:", JSON.stringify(payload, null, 2));
@@ -152,6 +165,7 @@ export default function BookingPage() {
                   onToggleService={toggleService}
                   selectedBarbers={selectedBarbers}
                   onSetBarberForService={setBarberForService}
+                  onReorderServices={reorderServices}
                   onNext={handleNext}
                   onBack={handleBack}
                 />

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSlots } from "../../hooks/useBooking";
+import { useSlots, useBarbers } from "../../hooks/useBooking";
 import { Check, Clock, Sun, Sunset, Moon, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { TimeSlot } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
@@ -47,6 +47,28 @@ export default function SlotSelection({
   onBack,
 }: SlotSelectionProps) {
   const { data: slots, isLoading: loadingSlots, isError } = useSlots(selectedDate);
+  const { data: barbers } = useBarbers();
+
+  // Count staff who actually provide at least one service
+  // API returns b.services as an array of service objects (empty [] = serves none)
+  const serviceProvidingStaffCount = useMemo(() => {
+    if (!barbers) return null; // not loaded yet — use raw API count
+    const count = barbers.filter((b) =>
+      b.is_active && Array.isArray(b.services) && b.services.length > 0
+    ).length;
+    return count > 0 ? count : null;
+  }, [barbers]);
+
+  // Adjust a slot's counts to cap at service-providing staff only
+  const adjustedSlot = (slot: TimeSlot): { available: number; total: number } => {
+    if (serviceProvidingStaffCount === null) {
+      return { available: slot.available_count, total: slot.total_count };
+    }
+    const total = Math.min(slot.total_count, serviceProvidingStaffCount);
+    const available = Math.min(slot.available_count, total);
+    return { available, total };
+  };
+
   const continueRef = useRef<HTMLDivElement>(null);
 
   // Auto-open the period containing the selected time; default open first period with slots
@@ -90,8 +112,9 @@ export default function SlotSelection({
   const renderSlotGrid = (timeSlots: TimeSlot[]) => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4">
       {timeSlots.map((slot, idx) => {
-        // Use API fields directly: available_count and total_count
-        const isAvailable = !slot.is_past && slot.available_count > 0;
+        // Use adjusted counts that exclude non-service-providing staff
+        const { available, total } = adjustedSlot(slot);
+        const isAvailable = !slot.is_past && available > 0;
         const isSelected = selectedTime === slot.time;
 
         return (
@@ -119,17 +142,17 @@ export default function SlotSelection({
               {to12h(slot.time)}
             </span>
 
-            {/* Staff count badge — using API's available_count / total_count directly */}
+            {/* Slots count badge — filtered to service-providing staff only */}
             {isAvailable ? (
               <div
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStaffBadgeClass(
-                  slot.available_count,
-                  slot.total_count,
+                  available,
+                  total,
                   isSelected
                 )}`}
               >
                 <Users className="w-2.5 h-2.5 flex-shrink-0" />
-                <span>{slot.available_count}/{slot.total_count} slots</span>
+                <span>{available}/{total} slots</span>
               </div>
             ) : (
               <span className="text-[9px] font-semibold uppercase tracking-wider text-gray-400">

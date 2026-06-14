@@ -43,7 +43,7 @@ export interface Barber {
   phone: string | null;
   is_active: boolean;
   roles: string[];
-  service_ids: string[];
+  services: Service[]; // nested service objects — NOT service_ids
   created_at: string;
   skill_tags: string[];
   experience_months: number;

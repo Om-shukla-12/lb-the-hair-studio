@@ -2,10 +2,11 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useServices, useBarbers, useSlots, useStaffAvailability } from "../../hooks/useBooking";
 import { Search, Clock, Check, ChevronDown, ChevronUp, ShoppingBag, X, Trash2, User } from "lucide-react";
+import { useServices, useBarbers, useSlots, useStaffAvailability } from "../../hooks/useBooking";
 import { Service, Barber } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
+import { calculateServiceTimeline, TimelineService } from "../../lib/time";
 
 interface ServiceSelectionProps {
   selectedDate: string;
@@ -14,8 +15,91 @@ interface ServiceSelectionProps {
   onToggleService: (serviceId: string) => void;
   selectedBarbers: Record<string, string | null>;
   onSetBarberForService: (serviceId: string, barberId: string | null) => void;
+  onReorderServices?: (newOrder: string[]) => void;
   onNext: () => void;
   onBack: () => void;
+}
+
+function CartItem({
+  service,
+  timelineItem,
+  chosenBarber,
+  chosenBarberId,
+  isFirst,
+  isLast,
+  handleRemoveService,
+  onMoveUp,
+  onMoveDown,
+}: {
+  service: Service;
+  timelineItem?: TimelineService;
+  chosenBarber: Barber | null;
+  chosenBarberId: string | null;
+  isFirst: boolean;
+  isLast: boolean;
+  handleRemoveService: (id: string) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+}) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: 40 }}
+      className="flex items-start justify-between bg-gray-50 rounded-xl p-3 mb-2 border border-transparent"
+    >
+      <div className="flex items-start gap-3 flex-grow min-w-0 pr-2">
+        <div className="flex flex-col gap-1 mt-0.5">
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            className={`p-1 rounded-md transition-colors ${
+              isFirst ? "text-gray-300 cursor-not-allowed" : "text-gray-400 hover:bg-gray-200 hover:text-[#8B0000]"
+            }`}
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            className={`p-1 rounded-md transition-colors ${
+              isLast ? "text-gray-300 cursor-not-allowed" : "text-gray-400 hover:bg-gray-200 hover:text-[#8B0000]"
+            }`}
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex-grow min-w-0 mt-1">
+          <p className="text-sm font-semibold text-[#111111] truncate">{service.name}</p>
+          {timelineItem && (
+            <p className="text-[11px] text-gray-600 mt-0.5 flex items-center gap-1 font-medium">
+              <Clock className="w-3 h-3 text-gray-400" />
+              {timelineItem.formattedStartTime} → {timelineItem.formattedEndTime}
+            </p>
+          )}
+          {chosenBarber && (
+            <p className="text-[10px] text-[#8B0000] font-medium mt-1 bg-[#8B0000]/5 inline-block px-1.5 py-0.5 rounded">✦ {chosenBarber.full_name}</p>
+          )}
+          {chosenBarberId === null && (
+            <p className="text-[10px] text-gray-500 font-medium mt-1 bg-gray-100 inline-block px-1.5 py-0.5 rounded">Any available staff</p>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
+        <button
+          onClick={() => handleRemoveService(service.id)}
+          className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-red-50 hover:border-red-200 transition-colors group"
+        >
+          <X className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500 transition-colors" />
+        </button>
+        <span className="text-sm font-bold text-[#111111] mt-2">
+          {service.currency === "INR" ? "₹" : service.currency}
+          {parseFloat(service.price).toLocaleString()}
+        </span>
+      </div>
+    </motion.div>
+  );
 }
 
 export default function ServiceSelection({
@@ -25,32 +109,54 @@ export default function ServiceSelection({
   onToggleService,
   selectedBarbers,
   onSetBarberForService,
+  onReorderServices,
   onNext,
   onBack,
 }: ServiceSelectionProps) {
-  const { data: services, isLoading, isError } = useServices();
-  const { data: barbers } = useBarbers();
-  const { data: slots } = useSlots(selectedDate);
-  
-  const allServiceIds = useMemo(() => services?.map(s => s.id) || [], [services]);
-  const { data: availableStaff } = useStaffAvailability(selectedDate, selectedTime, allServiceIds);
-
+  // ── All useState/useRef hooks first (React rules of hooks) ──
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("All");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const cartRef = useRef<HTMLDivElement>(null);
 
-  // Active barbers
-  const activeBarbers = useMemo(() => (barbers || []).filter((b) => b.is_active), [barbers]);
+  // ── Data fetching hooks ──
+  const { data: services, isLoading, isError } = useServices();
+  const { data: barbers } = useBarbers();
+  const { data: slots } = useSlots(selectedDate);
 
-  // Available barbers for selected time slot — from staff-availability API
-  const availableBarberIds = useMemo(() => {
-    if (!availableStaff) return new Set<string>();
-    return new Set(availableStaff.map((b) => b.id));
-  }, [availableStaff]);
+  // All active barbers who serve at least one service
+  const activeBarbers = useMemo(() =>
+    (barbers || []).filter((b) => {
+      if (!b.is_active) return false;
+      return Array.isArray(b.services) && b.services.length > 0;
+    }),
+  [barbers]);
 
-  // Total count from API slot
+  // Timeline calculation
+  const timeline = useMemo(() => {
+    if (!services || !selectedTime) return [];
+    const selectedSvcObjects = selectedServices
+      .map((id) => services.find((s) => s.id === id))
+      .filter((s): s is Service => !!s);
+    return calculateServiceTimeline(selectedSvcObjects, selectedTime);
+  }, [services, selectedServices, selectedTime]);
+
+  // Extract up to 3 service slot IDs for parallel hook calls (hooks must be unconditional)
+  const svc0 = selectedServices[0] ?? null;
+  const svc1 = selectedServices[1] ?? null;
+  const svc2 = selectedServices[2] ?? null;
+
+  const t0 = svc0 ? (timeline.find(t => t.serviceId === svc0)?.startTime ?? selectedTime) : selectedTime;
+  const t1 = svc1 ? (timeline.find(t => t.serviceId === svc1)?.startTime ?? selectedTime) : selectedTime;
+  const t2 = svc2 ? (timeline.find(t => t.serviceId === svc2)?.startTime ?? selectedTime) : selectedTime;
+
+  // One API call per service slot — API requires exactly ONE service_id per call
+  const { data: avail0 } = useStaffAvailability(selectedDate, t0, svc0 ? [svc0] : []);
+  const { data: avail1 } = useStaffAvailability(selectedDate, t1, svc1 ? [svc1] : []);
+  const { data: avail2 } = useStaffAvailability(selectedDate, t2, svc2 ? [svc2] : []);
+
+  // Total slot count from slots API
   const slotTotalCount = useMemo(() => {
     if (!slots || !selectedTime) return activeBarbers.length;
     const allSlots = [...slots.morning, ...slots.afternoon, ...slots.evening];
@@ -58,24 +164,34 @@ export default function ServiceSelection({
     return targetSlot?.total_count ?? activeBarbers.length;
   }, [slots, selectedTime, activeBarbers]);
 
-  const anyStaffAvailable = availableBarberIds.size > 0;
+  // Build map: serviceId → Set<barberId> | undefined (undefined = still loading)
+  const availByService = useMemo((): Record<string, Set<string> | undefined> => {
+    const m: Record<string, Set<string> | undefined> = {};
+    if (svc0) m[svc0] = avail0 !== undefined ? new Set(avail0.map((b) => b.id)) : undefined;
+    if (svc1) m[svc1] = avail1 !== undefined ? new Set(avail1.map((b) => b.id)) : undefined;
+    if (svc2) m[svc2] = avail2 !== undefined ? new Set(avail2.map((b) => b.id)) : undefined;
+    return m;
+  }, [svc0, avail0, svc1, avail1, svc2, avail2]);
 
-  /**
-   * For a given service, a barber is available if:
-   * 1. They are within the API's available_count for this slot
-   * Note: service_ids being empty means the barber serves ALL services (API design)
-   * We do NOT add a 'no-service' filter since all barbers have empty service_ids.
-   */
-  const isBarberAvailable = (barberId: string): boolean => {
-    return availableBarberIds.has(barberId);
+  /** Is barber available for service? Defaults to true while API is loading. */
+  const isBarberAvailableForService = (barberId: string, serviceId: string): boolean => {
+    const ids = availByService[serviceId];
+    if (ids === undefined) return true; // loading → show all as available
+    return ids.has(barberId);
   };
 
-  /**
-   * Count available barbers for a service using the API's available_count.
-   * Since all barbers serve all services (empty service_ids), this equals availableBarberIds.size
-   */
-  const countAvailableForService = (): number => {
-    return availableBarberIds.size;
+  /** Count of available staff for a service. Shows slotTotalCount while loading. */
+  const countAvailableForService = (serviceId: string): number => {
+    const ids = availByService[serviceId];
+    if (ids === undefined) return slotTotalCount; // loading → show max
+    return ids.size;
+  };
+
+  /** Whether any staff is available for a service. */
+  const anyStaffAvailable = (serviceId: string): boolean => {
+    const ids = availByService[serviceId];
+    if (ids === undefined) return true; // loading → allow
+    return ids.size > 0;
   };
 
   // Categories
@@ -115,10 +231,12 @@ export default function ServiceSelection({
     }
   }, [groupedServices, expandedCategory]);
 
-  // Selected service details
+  // Selected service details in the order of selectedServices
   const selectedServiceDetails = useMemo(() => {
     if (!services) return [];
-    return services.filter((s) => selectedServices.includes(s.id));
+    return selectedServices
+      .map((id) => services.find((s) => s.id === id))
+      .filter((s): s is Service => !!s);
   }, [services, selectedServices]);
 
   const { totalDuration, totalPrice } = useMemo(() => {
@@ -146,8 +264,27 @@ export default function ServiceSelection({
     onToggleService(serviceId);
   };
 
+  const moveServiceUp = (index: number) => {
+    if (index > 0 && onReorderServices) {
+      const newOrder = [...selectedServices];
+      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+      onReorderServices(newOrder);
+    }
+  };
+
+  const moveServiceDown = (index: number) => {
+    if (index < selectedServices.length - 1 && onReorderServices) {
+      const newOrder = [...selectedServices];
+      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+      onReorderServices(newOrder);
+    }
+  };
+
+  const overallStartTime = timeline[0]?.formattedStartTime;
+  const overallEndTime = timeline[timeline.length - 1]?.formattedEndTime;
+
   return (
-    <div className="w-full max-w-4xl mx-auto pb-24 md:pb-0">
+    <div className="w-full max-w-4xl mx-auto pb-24 md:pb-0 relative">
       {/* Header */}
       <div className="mb-4 px-4 md:px-0">
         <button
@@ -202,7 +339,7 @@ export default function ServiceSelection({
           <div className="flex items-center gap-4 text-sm font-medium text-gray-700">
             <span>Selected: <span className="text-[#8B0000] font-bold">{selectedServices.length}</span></span>
             <span className="w-px h-3 bg-gray-200" />
-            <span>Duration: <span className="text-[#8B0000] font-bold">{totalDuration} min</span></span>
+            <span>Time: <span className="text-[#8B0000] font-bold">{overallStartTime ? `${overallStartTime} - ${overallEndTime}` : '0 min'}</span></span>
             <span className="w-px h-3 bg-gray-200" />
             <span>Total: <span className="text-[#8B0000] font-bold">₹{totalPrice.toLocaleString()}</span></span>
           </div>
@@ -281,6 +418,7 @@ export default function ServiceSelection({
                           {catServices.map((service) => {
                             const isSelected = selectedServices.includes(service.id);
                             const selectedBarberId = selectedBarbers[service.id];
+                            const timelineItem = timeline.find(t => t.serviceId === service.id);
 
                             return (
                               <div key={service.id}>
@@ -305,9 +443,16 @@ export default function ServiceSelection({
                                     <h4 className={`text-sm font-semibold truncate ${isSelected ? "text-[#8B0000]" : "text-[#1A1A1A]"}`}>
                                       {service.name}
                                     </h4>
-                                    <div className="flex items-center text-xs text-gray-500 mt-0.5">
-                                      <Clock className="w-2.5 h-2.5 mr-1" />
-                                      {service.duration_minutes} min
+                                    <div className="flex items-center text-xs text-gray-500 mt-0.5 flex-wrap gap-x-3 gap-y-1">
+                                      <span className="flex items-center">
+                                        <Clock className="w-2.5 h-2.5 mr-1" />
+                                        {service.duration_minutes} min
+                                      </span>
+                                      {isSelected && timelineItem && (
+                                        <span className="font-medium text-[#8B0000] bg-[#8B0000]/5 px-1.5 py-0.5 rounded">
+                                          {timelineItem.formattedStartTime} → {timelineItem.formattedEndTime}
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
 
@@ -334,17 +479,17 @@ export default function ServiceSelection({
                                           <div className="flex items-center justify-between mb-2">
                                             <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Preferred Stylist</p>
                                             <span className="text-[10px] text-gray-400 font-medium">
-                                              {countAvailableForService()}/{slotTotalCount} slots available
+                                              {countAvailableForService(service.id)}/{slotTotalCount} slots available
                                             </span>
                                           </div>
                                           <div className="flex flex-wrap gap-1.5" onClick={(e) => e.stopPropagation()}>
                                             {/* Any Staff tag */}
                                             <button
-                                              onClick={() => anyStaffAvailable && onSetBarberForService(service.id, null)}
-                                              disabled={!anyStaffAvailable}
-                                              title={!anyStaffAvailable ? "No staff available at this time" : ""}
+                                              onClick={() => anyStaffAvailable(service.id) && onSetBarberForService(service.id, null)}
+                                              disabled={!anyStaffAvailable(service.id)}
+                                              title={!anyStaffAvailable(service.id) ? "No staff available at this time" : ""}
                                               className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all duration-150 ${
-                                                !anyStaffAvailable
+                                                !anyStaffAvailable(service.id)
                                                   ? "opacity-40 cursor-not-allowed bg-gray-100 border-gray-200 text-gray-400"
                                                   : selectedBarberId === null
                                                   ? "bg-[#8B0000] text-white border-[#8B0000] shadow-sm"
@@ -357,9 +502,9 @@ export default function ServiceSelection({
                                               </span>
                                             </button>
 
-                                            {/* Specific barber tags — grayed if not within API's available_count */}
+                                            {/* Specific barber tags */}
                                             {activeBarbers.map((barber) => {
-                                              const isAvail = isBarberAvailable(barber.id);
+                                              const isAvail = isBarberAvailableForService(barber.id, service.id);
                                               const isChosen = selectedBarberId === barber.id;
                                               return (
                                                 <button
@@ -417,13 +562,13 @@ export default function ServiceSelection({
 
       {/* Desktop: Fixed cart button (bottom-right) */}
       <AnimatePresence>
-        {selectedServices.length > 0 && (
+        {selectedServices.length > 0 && !isCartOpen && (
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsCartOpen(true)}
-            className="hidden md:flex fixed bottom-8 right-8 z-50 items-center gap-2 bg-[#8B0000] text-white px-5 py-3 rounded-full shadow-[0_8px_30px_rgba(139,0,0,0.35)] hover:bg-[#5C0000] transition-all duration-200 hover:-translate-y-0.5"
+            className="hidden md:flex fixed bottom-8 right-8 z-40 items-center gap-2 bg-[#8B0000] text-white px-5 py-3 rounded-full shadow-[0_8px_30px_rgba(139,0,0,0.35)] hover:bg-[#5C0000] transition-all duration-200 hover:-translate-y-0.5"
           >
             <ShoppingBag className="w-4 h-4" />
             <span className="font-bold text-sm">{selectedServices.length} Services</span>
@@ -434,13 +579,13 @@ export default function ServiceSelection({
 
       {/* Mobile: Sticky bottom pill */}
       <AnimatePresence>
-        {selectedServices.length > 0 && (
+        {selectedServices.length > 0 && !isCartOpen && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] px-4 py-3"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] px-4 py-3 pb-safe"
           >
             <div className="flex items-center gap-3">
               <button
@@ -449,7 +594,10 @@ export default function ServiceSelection({
               >
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-4 h-4" />
-                  <span className="font-bold text-sm">{selectedServices.length} Services · {totalDuration} min</span>
+                  <div className="flex flex-col items-start">
+                    <span className="font-bold text-sm">{selectedServices.length} Services</span>
+                    <span className="text-[10px] text-white/80">{overallStartTime} → {overallEndTime}</span>
+                  </div>
                 </div>
                 <span className="font-bold text-sm">₹{totalPrice.toLocaleString()}</span>
               </button>
@@ -481,10 +629,10 @@ export default function ServiceSelection({
               className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col"
             >
               {/* Drawer Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white z-10 relative">
                 <div>
-                  <h3 className="text-base font-bold text-[#111111] font-serif">Your Selection</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{selectedServices.length} service{selectedServices.length !== 1 ? 's' : ''}</p>
+                  <h3 className="text-base font-bold text-[#111111] font-serif">Your Schedule</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Use arrows to reorder services</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {selectedServices.length > 0 && (
@@ -495,7 +643,7 @@ export default function ServiceSelection({
                       className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
-                      Clear all
+                      Clear
                     </button>
                   )}
                   <button
@@ -507,84 +655,75 @@ export default function ServiceSelection({
                 </div>
               </div>
 
-              {/* Services List */}
-              <div className="flex-1 overflow-y-auto p-4">
+              {/* Services List (Up/Down arrows) */}
+              <div className="flex-1 overflow-y-auto p-4 bg-white relative z-0">
                 {selectedServiceDetails.length === 0 ? (
                   <div className="text-center py-12 text-gray-400">
                     <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
                     <p className="text-sm">No services selected</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    {selectedServiceDetails.map((service) => {
+                  <div className="space-y-0.5">
+                    {selectedServiceDetails.map((service, index) => {
                       const chosenBarberId = selectedBarbers[service.id];
                       const chosenBarber = chosenBarberId
-                        ? activeBarbers.find((b) => b.id === chosenBarberId)
+                        ? activeBarbers.find((b) => b.id === chosenBarberId) ?? null
                         : null;
+                      const timelineItem = timeline.find((t) => t.serviceId === service.id);
 
                       return (
-                        <motion.div
+                        <CartItem
                           key={service.id}
-                          layout
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, x: 40 }}
-                          className="flex items-start justify-between bg-gray-50 rounded-xl p-3"
-                        >
-                          <div className="flex-grow min-w-0 pr-2">
-                            <p className="text-sm font-semibold text-[#111111] truncate">{service.name}</p>
-                            <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                              <Clock className="w-2.5 h-2.5" />
-                              {service.duration_minutes} min
-                            </p>
-                            {chosenBarber && (
-                              <p className="text-[10px] text-[#8B0000] font-medium mt-1">✦ {chosenBarber.full_name}</p>
-                            )}
-                            {chosenBarberId === null && (
-                              <p className="text-[10px] text-gray-400 font-medium mt-1">Any available staff</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-sm font-bold text-[#111111]">
-                              ₹{parseFloat(service.price).toLocaleString()}
-                            </span>
-                            <button
-                              onClick={() => handleRemoveService(service.id)}
-                              className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-red-50 hover:border-red-200 transition-colors"
-                            >
-                              <X className="w-3 h-3 text-gray-400 hover:text-red-500" />
-                            </button>
-                          </div>
-                        </motion.div>
+                          service={service}
+                          timelineItem={timelineItem}
+                          chosenBarber={chosenBarber}
+                          chosenBarberId={chosenBarberId}
+                          isFirst={index === 0}
+                          isLast={index === selectedServiceDetails.length - 1}
+                          handleRemoveService={handleRemoveService}
+                          onMoveUp={() => moveServiceUp(index)}
+                          onMoveDown={() => moveServiceDown(index)}
+                        />
                       );
                     })}
                   </div>
                 )}
               </div>
 
-              {/* Drawer Footer */}
-              <div className="border-t border-gray-100 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600 font-medium">Total ({totalDuration} min)</span>
+              {/* Drawer Footer Summary */}
+              <div className="border-t border-gray-100 p-4 bg-white z-10 relative">
+                <div className="mb-4 bg-gray-50 rounded-lg p-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm text-gray-600 font-medium">{selectedServices.length} Services</span>
+                    <span className="text-sm font-bold text-[#8B0000]">{totalDuration} min</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-200/60 mt-2">
+                    <span className="text-xs text-gray-500 font-medium">Timeline</span>
+                    <span className="text-xs text-gray-800 font-semibold">{overallStartTime} → {overallEndTime}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <span className="text-sm text-gray-800 font-bold">Total Amount</span>
                   <span className="text-xl font-bold text-[#8B0000]">₹{totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={onBack}
-                    className="flex-1 py-2.5 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors text-sm"
+                    onClick={() => setIsCartOpen(false)}
+                    className="flex-1 py-3 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors text-sm"
                   >
-                    Back
+                    Add More
                   </button>
                   <button
                     onClick={() => { setIsCartOpen(false); onNext(); }}
                     disabled={selectedServices.length === 0}
-                    className={`flex-[2] py-2.5 rounded-xl font-bold text-white text-sm transition-all ${
+                    className={`flex-[2] py-3 rounded-xl font-bold text-white text-sm transition-all shadow-md ${
                       selectedServices.length > 0
                         ? "bg-[#8B0000] hover:bg-[#5C0000] shadow-sm"
                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    Proceed to Details →
+                    Confirm & Continue
                   </button>
                 </div>
               </div>
@@ -594,7 +733,7 @@ export default function ServiceSelection({
       </AnimatePresence>
 
       {/* Mobile spacer */}
-      <div className="md:hidden h-20" />
+      <div className="md:hidden h-24" />
     </div>
   );
 }
