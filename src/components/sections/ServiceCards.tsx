@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, Scissors } from "lucide-react";
 import { useServices } from "@/hooks/useBooking";
+import ScissorsLoader from "@/components/ui/ScissorsLoader";
 
 export default function ServiceCards() {
   const { data: services, isLoading } = useServices();
@@ -42,14 +43,8 @@ export default function ServiceCards() {
         </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-44 animate-pulse rounded-xl"
-                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-              />
-            ))}
+          <div className="flex w-full items-center justify-center py-12">
+            <ScissorsLoader message="Loading services..." />
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
