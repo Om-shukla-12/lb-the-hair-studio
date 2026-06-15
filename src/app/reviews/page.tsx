@@ -3,24 +3,9 @@
 import TopNavBar from "@/components/layout/TopNavBar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
+import Script from "next/script";
 
-const testimonials = [
-  {
-    quote: "The best salon experience I have ever had. The attention to detail is unmatched. Truly a luxury experience.",
-    author: "Priya S.",
-    service: "Balayage Color",
-  },
-  {
-    quote: "LB The Hair Studio transformed my look completely. The L'Oréal products they use make such a difference in quality.",
-    author: "Ananya M.",
-    service: "Keratin Treatment",
-  },
-  {
-    quote: "From the moment I walked in, I felt like a VIP. The stylists are incredibly talented and attentive.",
-    author: "Rahul K.",
-    service: "Precision Haircut",
-  },
-];
+
 
 export default function Reviews() {
   return (
@@ -58,39 +43,13 @@ export default function Reviews() {
           </div>
         </section>
 
-        {/* Testimonials Grid */}
-        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, index) => (
-              <motion.div
-                key={t.author}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-[var(--surface)] rounded-2xl p-8 border border-[#E6E0DA] shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                {/* Stars */}
-                <div className="flex gap-1 mb-6">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className="material-symbols-outlined text-[#D4AF37] text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      star
-                    </span>
-                  ))}
-                </div>
-                <p className="text-[var(--text)] text-lg font-light leading-relaxed mb-8 italic">
-                  "{t.quote}"
-                </p>
-                <div className="border-t border-[#E6E0DA] pt-4">
-                  <p className="font-bold text-[var(--text)] text-sm">{t.author}</p>
-                  <p className="text-[var(--text-muted)] text-xs">{t.service}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+        {/* Google Reviews Widget */}
+        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 min-h-[500px]">
+          <div className="elfsight-app-0c49a052-f991-40b3-a464-02f607783705" data-elfsight-app-lazy></div>
         </section>
       </main>
       <Footer />
+      <Script src="https://elfsightcdn.com/platform.js" strategy="afterInteractive" />
     </>
   );
 }
