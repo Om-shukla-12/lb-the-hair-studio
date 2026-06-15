@@ -11,10 +11,11 @@ import DateSelection from "@/components/booking/DateSelection";
 import SlotSelection from "@/components/booking/SlotSelection";
 import ServiceSelection from "@/components/booking/ServiceSelection";
 import CustomerForm from "@/components/booking/CustomerForm";
-import SuccessModal from "@/components/booking/SuccessModal";
+import BookingStatusModal, { ModalState } from "@/components/booking/BookingStatusModal";
 import { useCreateBooking, useServices } from "@/hooks/useBooking";
 import { CustomerDetails, BulkBookingPayload, BookingPayload } from "@/types/booking";
 import { addMinutesToTime } from "@/lib/time";
+import { getCustomerFriendlyError, CustomerFriendlyError } from "@/lib/errorHandling";
 
 const STEPS = ["Date", "Time", "Services", "Details"];
 
@@ -25,7 +26,10 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [selectedBarbers, setSelectedBarbers] = useState<Record<string, string | null>>({});
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  
+  // Modal State
+  const [modalState, setModalState] = useState<ModalState>("hidden");
+  const [modalError, setModalError] = useState<CustomerFriendlyError | null>(null);
 
   const createBooking = useCreateBooking();
   const { data: servicesData } = useServices();
@@ -92,18 +96,35 @@ export default function BookingPage() {
       const payload: BulkBookingPayload = { bookings };
       console.log("SENDING PAYLOAD:", JSON.stringify(payload, null, 2));
       await createBooking.mutateAsync(payload);
-      setIsSuccessModalOpen(true);
+      
+      setModalState("success");
     } catch (error: unknown) {
-      const bookingError = error as { response?: { data?: unknown }; message?: string };
-      const errorDetails = bookingError.response?.data ?? bookingError.message ?? "Unknown error";
-      console.error("Booking failed:", errorDetails);
-      alert(`Failed to create booking. Error: ${JSON.stringify(errorDetails)}`);
+      console.error("Booking failed:", error);
+      const friendlyError = getCustomerFriendlyError(error);
+      setModalError(friendlyError);
+      setModalState("error");
     }
   };
 
   const handleModalClose = () => {
-    setIsSuccessModalOpen(false);
-    router.push("/");
+    const isSuccess = modalState === "success";
+    setModalState("hidden");
+    if (isSuccess) {
+      router.push("/");
+    }
+  };
+
+  const handleModalRetry = () => {
+    setModalState("hidden");
+    // User can just click 'Confirm Booking' again as the form state is preserved
+  };
+
+  const handleSelectAnotherTime = () => {
+    setModalState("hidden");
+    // Go back to the time selection step
+    setCurrentStep(1);
+    setSelectedTime(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -186,7 +207,13 @@ export default function BookingPage() {
           </div>
         </div>
 
-        <SuccessModal isOpen={isSuccessModalOpen} onClose={handleModalClose} />
+        <BookingStatusModal 
+          state={modalState} 
+          error={modalError} 
+          onClose={handleModalClose}
+          onRetry={handleModalRetry}
+          onSelectAnotherTime={handleSelectAnotherTime}
+        />
       </div>
       <Footer />
     </>

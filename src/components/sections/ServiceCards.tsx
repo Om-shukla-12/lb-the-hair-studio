@@ -95,12 +95,11 @@ export default function ServiceCards() {
                   {service.name}
                 </h3>
 
-                {/* Description */}
                 <p
                   className="mt-2 line-clamp-2 flex-grow text-xs leading-relaxed"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  {service.description || "A tailored salon ritual designed for polished, lasting results."}
+                  {service.description}
                 </p>
 
                 {/* Footer */}

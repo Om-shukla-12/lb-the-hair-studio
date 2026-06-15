@@ -176,9 +176,9 @@ export default function HeroSection() {
             <Phone className="h-4 w-4" style={{ color: "var(--primary)" }} />
             Call
           </a>
-          {/* <Link href="/booking" className="btn-primary rounded-md px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em]">
+          <Link href="/booking" className="btn-primary rounded-md px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em]">
             Book Now
-          </Link> */}
+          </Link>
           <a
             href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8"
             target="_blank"
