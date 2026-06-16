@@ -51,15 +51,15 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-on-background selection:bg-[#D4AF37]/25 selection:text-[#FFF7EA]">
         <Script id="theme-script" strategy="beforeInteractive">
-          {`
-            try {
-              var theme = localStorage.getItem('lb-theme') || 'dark';
-              document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
-            } catch (e) {
-              document.documentElement.dataset.theme = 'dark';
-            }
-          `}
-        </Script>
+  {`
+    try {
+      var theme = localStorage.getItem('lb-theme') || 'dark';
+      document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+    } catch (e) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  `}
+</Script>
         <QueryProvider>
           {children}
         </QueryProvider>

@@ -39,16 +39,16 @@ export default function HeroSection() {
         className="absolute inset-0 -z-10"
         style={{
           background: `
-            var(--hero-overlay-h, linear-gradient(90deg, rgba(15,15,16,0.90) 0%, rgba(15,15,16,0.65) 42%, rgba(15,15,16,0.22) 100%)),
-            var(--hero-overlay-v, linear-gradient(180deg, rgba(15,15,16,0.18) 0%, rgba(15,15,16,0.72) 78%, #0F0F10 100%))
+            var(--hero-overlay-h, linear-gradient(90deg, rgba(15,15,16,0.55) 0%, rgba(15,15,16,0.30) 42%, rgba(15,15,16,0.05) 100%)),
+            var(--hero-overlay-v, linear-gradient(180deg, rgba(15,15,16,0.05) 0%, rgba(15,15,16,0.40) 78%, #0F0F10 100%))
           `,
         }}
       />
       {/* Fallback per-theme overlay via CSS class */}
       <style>{`
         :root {
-          --hero-overlay-h: linear-gradient(90deg, rgba(15,15,16,0.90) 0%, rgba(15,15,16,0.65) 42%, rgba(15,15,16,0.22) 100%);
-          --hero-overlay-v: linear-gradient(180deg, rgba(15,15,16,0.18) 0%, rgba(15,15,16,0.72) 78%, var(--bg) 100%);
+          --hero-overlay-h: linear-gradient(90deg, rgba(15,15,16,0.55) 0%, rgba(15,15,16,0.30) 42%, rgba(15,15,16,0.05) 100%);
+          --hero-overlay-v: linear-gradient(180deg, rgba(15,15,16,0.05) 0%, rgba(15,15,16,0.40) 78%, var(--bg) 100%);
         }
       `}</style>
 

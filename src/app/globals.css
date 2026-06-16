@@ -206,6 +206,14 @@
 }
 
 /* ─── GLOBAL BASE ─── */
+html {
+  background-color: #0F0F10; /* dark default — prevents black flash before JS loads */
+  scroll-behavior: smooth;
+}
+html[data-theme="light"] {
+  background-color: #F9F7F3;
+}
+
 html, body {
   background-color: var(--bg);
   color: var(--text);

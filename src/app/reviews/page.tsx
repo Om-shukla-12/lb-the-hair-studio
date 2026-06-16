@@ -4,10 +4,29 @@ import TopNavBar from "@/components/layout/TopNavBar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import Script from "next/script";
+import { useState, useEffect, useRef } from "react";
 
 
 
 export default function Reviews() {
+  const [isLoading, setIsLoading] = useState(true);
+  const widgetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      if (widgetRef.current && widgetRef.current.children.length > 0) {
+        setIsLoading(false);
+        observer.disconnect();
+      }
+    });
+
+    if (widgetRef.current) {
+      observer.observe(widgetRef.current, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <TopNavBar />
@@ -44,8 +63,14 @@ export default function Reviews() {
         </section>
 
         {/* Google Reviews Widget */}
-        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 min-h-[500px]">
-          <div className="elfsight-app-0c49a052-f991-40b3-a464-02f607783705" data-elfsight-app-lazy></div>
+        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 min-h-[500px] relative">
+          {isLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 mb-4" style={{ borderColor: "var(--border)", borderTopColor: "var(--accent-text)" }} />
+              <p className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: "var(--accent-text)", fontFamily: "var(--font-raleway)" }}>loading public reviews...</p>
+            </div>
+          )}
+          <div ref={widgetRef} className="elfsight-app-0c49a052-f991-40b3-a464-02f607783705 relative z-10 w-full" data-elfsight-app-lazy></div>
         </section>
       </main>
       <Footer />
