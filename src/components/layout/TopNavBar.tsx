@@ -28,19 +28,19 @@ export default function TopNavBar() {
           style={{ background: "rgba(251,247,239,0.86)", borderColor: "rgba(176,135,90,0.28)" }}
         >
           {/* Logo crest + wordmark */}
-          <Link className="group flex min-w-0 items-center gap-2.5" href="/">
+          <Link className="group flex min-w-0 flex-1 items-center gap-2" href="/">
             <div className="relative h-9 w-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-10 md:w-10">
               <Image src="/photos/download.png" alt="LB The Hair Studio" fill className="object-contain" />
             </div>
-            <div className="flex flex-col justify-center leading-tight">
+            <div className="min-w-0 flex-col justify-center leading-tight">
               <span
-                className="font-[family-name:var(--font-cormorant)] text-lg font-semibold tracking-wide md:text-xl"
+                className="block truncate font-[family-name:var(--font-cormorant)] text-base font-semibold tracking-wide sm:text-lg md:text-xl"
                 style={{ color: "var(--ink)" }}
               >
                 LB The Hair Studio
               </span>
               <span
-                className="mt-0.5 font-[family-name:var(--font-raleway)] text-[8px] font-bold uppercase tracking-[0.18em] md:text-[9px]"
+                className="mt-0.5 block truncate font-[family-name:var(--font-raleway)] text-[7px] font-bold uppercase tracking-[0.14em] sm:text-[8px] md:text-[9px]"
                 style={{ color: "var(--m-gold)" }}
               >
                 L&apos;Oréal Professionnel Partner
@@ -99,15 +99,9 @@ export default function TopNavBar() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
-            <Link
-              href="/booking"
-              className="foil-bg rounded-md px-4 py-2.5 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.10em]"
-            >
-              Book
-            </Link>
+          <div className="flex items-center md:hidden">
             <button
-              className="flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-md transition-colors"
               style={{ border: "1px solid rgba(176,135,90,0.4)", color: "var(--ink-muted)", background: "var(--cream-soft)" }}
               onClick={() => setIsMobileMenuOpen((open) => !open)}
               aria-label="Toggle navigation menu"
