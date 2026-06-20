@@ -2,75 +2,77 @@
 
 import TopNavBar from "@/components/layout/TopNavBar";
 import Footer from "@/components/layout/Footer";
+import PageHeader from "@/components/ui/PageHeader";
 import { motion } from "framer-motion";
 import Script from "next/script";
 import { useState, useEffect, useRef } from "react";
 
-
+const featuredQuotes = [
+  { text: "Best salon experience in Ahmedabad. The team truly understands premium grooming.", author: "Google Review" },
+  { text: "L'Oréal products, immaculate hygiene, and a result that exceeded expectations.", author: "Google Review" },
+];
 
 export default function Reviews() {
   const [isLoading, setIsLoading] = useState(true);
   const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      if (widgetRef.current && widgetRef.current.children.length > 0) {
-        setIsLoading(false);
-        observer.disconnect();
-      }
+    const observer = new MutationObserver(() => {
+      if (widgetRef.current && widgetRef.current.children.length > 0) { setIsLoading(false); observer.disconnect(); }
     });
-
-    if (widgetRef.current) {
-      observer.observe(widgetRef.current, { childList: true, subtree: true });
-    }
-
+    if (widgetRef.current) observer.observe(widgetRef.current, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
 
   return (
     <>
       <TopNavBar />
-      <main className="flex-grow pt-24 pb-16" style={{ background: "var(--bg)", color: "var(--text)" }}>
-        {/* Hero */}
-        <section className="relative py-20 bg-[#111111] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#6B0000]/30 via-transparent to-[#D4AF37]/10 pointer-events-none"></div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 text-center">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-[#D4AF37] text-xs uppercase tracking-[0.2em] font-bold mb-4 block"
-            >
-              Testimonials
-            </motion.span>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-serif text-4xl md:text-6xl text-white font-bold mb-4"
-            >
-              What Our Clients Say
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-white/60 max-w-xl mx-auto text-lg font-light"
-            >
-              Real experiences from our valued clients at LB The Hair Studio.
-            </motion.p>
-          </div>
-        </section>
+      <main className="flex-grow" style={{ background: "var(--cream)", color: "var(--ink)" }}>
+        <PageHeader eyebrow="Testimonials" title="What Our Clients Say" subtitle="Real experiences from our valued clients at LB The Hair Studio." />
 
-        {/* Google Reviews Widget */}
-        <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 min-h-[500px] relative">
-          {isLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 mb-4" style={{ borderColor: "var(--border)", borderTopColor: "var(--accent-text)" }} />
-              <p className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: "var(--accent-text)", fontFamily: "var(--font-raleway)" }}>loading public reviews...</p>
-            </div>
-          )}
-          <div ref={widgetRef} className="elfsight-app-0c49a052-f991-40b3-a464-02f607783705 relative z-10 w-full" data-elfsight-app-lazy></div>
+        {/* Rating badge */}
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+          className="mx-auto -mt-4 mb-6 flex w-fit items-center gap-3 px-5 py-3" style={{ background: "var(--cream-soft)", border: "1px solid rgba(176,135,90,0.3)" }}>
+          <span className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold" style={{ color: "var(--ink)" }}>5.0</span>
+          <div>
+            <div className="text-sm tracking-widest" style={{ color: "var(--m-gold)" }}>★★★★★</div>
+            <div className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--ink-subtle)" }}>Google Reviews</div>
+          </div>
+        </motion.div>
+
+        {/* Featured pull quotes */}
+        <div className="mx-auto mb-8 flex max-w-2xl flex-col gap-4 px-5 md:flex-row md:px-8">
+          {featuredQuotes.map((q, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="flex-1 px-5 py-5"
+              style={{ background: "var(--cream-soft)", border: "1px solid rgba(176,135,90,0.2)" }}
+            >
+              <div className="foil-text mb-2 font-[family-name:var(--font-cormorant)] text-2xl leading-none">&ldquo;</div>
+              <p className="text-[13px] font-light italic leading-relaxed" style={{ color: "var(--ink)" }}>
+                {q.text}
+              </p>
+              <div className="mt-3 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--m-gold-deep)" }}>
+                — {q.author}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <section className="mx-auto max-w-7xl px-5 py-6 md:px-8 md:py-10">
+          <div className="relative min-h-[500px]">
+            {isLoading && (
+              <div className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center">
+                <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2" style={{ borderColor: "var(--hairline-cream)", borderTopColor: "var(--m-gold)" }} />
+                <p className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "var(--m-gold)" }}>loading reviews...</p>
+              </div>
+            )}
+            <div ref={widgetRef} className="elfsight-app-0c49a052-f991-40b3-a464-02f607783705 relative z-10 w-full" data-elfsight-app-lazy />
+          </div>
         </section>
       </main>
       <Footer />

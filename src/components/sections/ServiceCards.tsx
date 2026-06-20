@@ -1,156 +1,157 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Scissors } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useServices } from "@/hooks/useBooking";
 import ScissorsLoader from "@/components/ui/ScissorsLoader";
+import SectionMotif from "@/components/ui/SectionMotif";
+
+const ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"];
 
 export default function ServiceCards() {
   const { data: services, isLoading } = useServices();
-  const displayServices = services?.slice(0, 4) || [];
+  const displayServices = services?.slice(0, 6) || [];
 
   return (
-    <section className="luxury-shell px-4 py-12 md:px-8 md:py-18" id="services">
-      <div className="mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7 }}
-          className="mb-7 flex flex-col justify-between gap-4 md:mb-9 md:flex-row md:items-end"
-        >
-          <div className="max-w-2xl">
-            <span
-              className="mb-2 block font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.24em]"
-              style={{ color: "var(--accent-text)" }}
-            >
-              Signature Services
-            </span>
-            <h2
-              className="font-[family-name:var(--font-cormorant)] text-4xl font-semibold leading-tight md:text-5xl"
-              style={{ color: "var(--text)" }}
-            >
-              Precision, color, and finish.
-            </h2>
-          </div>
-          <p
-            className="max-w-md text-sm leading-relaxed md:text-[15px]"
-            style={{ color: "var(--text-muted)" }}
-          >
-            Compact, curated treatments using professional products and exacting salon technique.
-          </p>
-        </motion.div>
+    <section className="maison-cream-soft px-5 pb-20 pt-10 md:px-8 md:pb-16 md:pt-14" id="services">
+      <div className="mx-auto max-w-6xl">
+        <SectionMotif label="Services" tone="cream" />
 
-        {isLoading ? (
-          <div className="flex w-full items-center justify-center py-12">
-            <ScissorsLoader message="Loading services..." />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {displayServices.map((service, index) => (
-              <motion.article
-                key={service.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.55, delay: index * 0.06 }}
-                className="luxury-card group flex min-h-[190px] flex-col rounded-xl p-4 transition-all duration-300 hover:-translate-y-1"
-                style={{ cursor: "pointer" }}
-              >
-                {/* Top row */}
-                <div className="mb-4 flex items-start justify-between gap-3">
-                  <div
-                    className="flex h-9 w-9 items-center justify-center rounded-md transition-colors duration-300"
-                    style={{
-                      background: "rgba(139,0,0,0.10)",
-                      border: "1px solid rgba(139,0,0,0.14)",
-                      color: "var(--primary)",
-                    }}
-                  >
-                    <Scissors className="h-4 w-4" />
-                  </div>
-                  <span
-                    className="rounded-md px-2 py-1 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.16em]"
-                    style={{
-                      background: "rgba(139,0,0,0.06)",
-                      border: "1px solid rgba(139,0,0,0.12)",
-                      color: "var(--primary)",
-                    }}
-                  >
-                    {service.tag || "Signature"}
-                  </span>
-                </div>
-
-                {/* Name */}
-                <h3
-                  className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold leading-none transition-colors duration-300"
-                  style={{ color: "var(--text)" }}
-                >
-                  {service.name}
-                </h3>
-
-                <p
-                  className="mt-2 line-clamp-2 flex-grow text-xs leading-relaxed"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  {service.description}
-                </p>
-
-                {/* Footer */}
-                <div
-                  className="mt-4 flex items-end justify-between pt-3"
-                  style={{ borderTop: "1px solid var(--border)" }}
-                >
-                  <div>
-                    <div
-                      className="font-[family-name:var(--font-cormorant)] text-xl font-semibold leading-none"
-                      style={{ color: "var(--text)" }}
-                    >
-                      {service.currency === "INR" ? "Rs. " : service.currency}
-                      {parseFloat(service.price).toLocaleString()}
-                    </div>
-                    <div
-                      className="mt-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
-                      style={{ color: "var(--text-subtle)" }}
-                    >
-                      <Clock className="h-3 w-3" />
-                      {service.duration_minutes} min
-                    </div>
-                  </div>
-                  <Link
-                    href="/booking"
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--primary)] text-white transition-all duration-300 hover:bg-[#6D071A]"
-                    aria-label={`Book ${service.name}`}
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        )}
-
-        {/* CTA */}
-        <motion.div
+        <motion.h2
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, delay: 0.15 }}
-          className="mt-8 text-center"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="mt-4 mb-8 text-center font-[family-name:var(--font-cormorant)] text-4xl font-semibold leading-none md:text-5xl"
+          style={{ color: "var(--ink)" }}
         >
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 pb-1 font-[family-name:var(--font-raleway)] text-xs font-bold uppercase tracking-[0.18em] transition-colors"
-            style={{
-              borderBottom: "1px solid var(--primary)",
-              color: "var(--primary)",
-            }}
+          The Menu
+        </motion.h2>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
+          {/* Salon interior image — landscape, sticky on desktop */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="hidden md:block"
           >
-            Explore all services
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </motion.div>
+            <div className="sticky top-28">
+              <div className="overflow-hidden" style={{ border: "1px solid rgba(198,160,106,0.4)" }}>
+                <div className="p-1.5" style={{ background: "var(--cream)" }}>
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src="/photos/hero-bg.jpg"
+                      alt="LB The Hair Studio interior"
+                      fill
+                      className="object-cover"
+                      sizes="50vw"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between px-1">
+                <div>
+                  <div className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--m-gold)" }}>
+                    L&apos;Oréal Professionnel
+                  </div>
+                  <div className="mt-0.5 font-[family-name:var(--font-cormorant)] text-sm italic" style={{ color: "var(--ink-muted)" }}>
+                    Premium products, expert hands
+                  </div>
+                </div>
+                <Link
+                  href="/booking"
+                  className="foil-bg rounded-sm px-4 py-2 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.10em]"
+                >
+                  Book
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Service list — parallel to image on desktop */}
+          <div>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <ScissorsLoader message="Loading services..." />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {displayServices.map((service, index) => (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                  >
+                    <Link
+                      href="/booking"
+                      className="maison-row flex items-center gap-3.5 px-2 py-4 md:px-3 md:py-5"
+                      style={{
+                        borderTop: "1px solid var(--hairline-cream)",
+                        borderBottom: index === displayServices.length - 1 ? "1px solid var(--hairline-cream)" : "none",
+                      }}
+                    >
+                      <span
+                        className="w-7 flex-shrink-0 font-[family-name:var(--font-cormorant)] text-sm italic md:w-9 md:text-base"
+                        style={{ color: "var(--m-gold)" }}
+                      >
+                        {ROMAN[index]}.
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className="font-[family-name:var(--font-cormorant)] text-lg font-semibold leading-tight md:text-xl"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          {service.name}
+                        </div>
+                        <div
+                          className="mt-1 truncate font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.10em]"
+                          style={{ color: "var(--ink-subtle)" }}
+                        >
+                          {service.duration_minutes} min
+                          {service.tag ? ` · ${service.tag}` : ""}
+                        </div>
+                      </div>
+                      <span
+                        className="flex-shrink-0 font-[family-name:var(--font-cormorant)] text-base font-semibold md:text-lg"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        {service.currency === "INR" ? "₹" : service.currency}
+                        {parseFloat(service.price).toLocaleString()}
+                      </span>
+                      <ArrowRight
+                        className="maison-row-arrow h-4 w-4 flex-shrink-0"
+                        style={{ color: "var(--m-gold)" }}
+                      />
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="mb-8 mt-16 pb-4 text-center md:mb-4 md:mt-16 md:text-left md:pl-3"
+            >
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 pb-1 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em] transition-all"
+                style={{ color: "var(--ink)", borderBottom: "1px solid var(--m-gold)" }}
+              >
+                View Full Menu
+                <ArrowRight className="h-3 w-3" style={{ color: "var(--m-gold)" }} />
+              </Link>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

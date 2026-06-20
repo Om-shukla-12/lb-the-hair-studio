@@ -1,141 +1,106 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import Image from "next/image";
+import { MapPin, Phone } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { FacebookIcon } from "@/components/ui/FacebookIcon";
 
+const socialLinks = [
+  { href: "https://www.instagram.com/lbthehairstudio/", label: "Instagram", icon: InstagramIcon },
+  { href: "https://www.facebook.com/lbthehairstudio", label: "Facebook", icon: FacebookIcon },
+  { href: "https://wa.me/7878464710", label: "WhatsApp", icon: WhatsAppIcon },
+  { href: "https://maps.app.goo.gl/WPvPqqJLptTuARLZ8", label: "Maps", icon: MapPin },
+];
+
 export default function Footer() {
   return (
-    <footer
-      className="mt-auto"
-      style={{ borderTop: "1px solid var(--border)", background: "var(--bg-soft)", color: "var(--text)" }}
-    >
-      {/* Main footer grid */}
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-6 md:grid-cols-4 md:px-8 md:py-8">
+    <footer className="mt-auto" style={{ background: "var(--cream-3)", color: "var(--ink)" }}>
+      <div className="hairline-gold" />
 
-        {/* Brand */}
-        <div className="col-span-2">
-          {/* Logo */}
-          <Link href="/" className="mb-1 inline-block">
-            <div
-              className="w-80 h-20 md:w-96 md:h-24 bg-[var(--primary)]"
-              style={{
-                WebkitMaskImage: "url(/photos/lbthelogo.png)",
-                WebkitMaskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                WebkitMaskPosition: "left center",
-                maskImage: "url(/photos/lbthelogo.png)",
-                maskSize: "contain",
-                maskRepeat: "no-repeat",
-                maskPosition: "left center",
-              }}
-              aria-label="LB The Hair Studio logo"
-            />
+      <div className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Link href="/" className="group flex flex-col items-center">
+            <div className="relative mb-3 h-14 w-14 transition-transform duration-300 group-hover:scale-105">
+              <Image src="/photos/download.png" alt="LB The Hair Studio" fill className="object-contain" />
+            </div>
+            <span className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold" style={{ color: "var(--ink)" }}>
+              LB The Hair Studio
+            </span>
+            <span
+              className="mt-1 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em]"
+              style={{ color: "var(--m-gold)" }}
+            >
+              L&apos;Oréal Professionnel Partner
+            </span>
           </Link>
 
-          {/* L'Oreal partner line — sits just below the logo */}
-          <p
-            className="mb-3 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: "var(--accent-text)" }}
-          >
-            L&apos;Oreal Professionnel Official Partner
-          </p>
+          {/* Hours & Contact */}
+          <div className="mt-5 flex items-center gap-5 text-center">
+            <div>
+              <div className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--m-gold-deep)" }}>
+                Hours
+              </div>
+              <div className="mt-1 text-[13px] font-light" style={{ color: "var(--ink-muted)" }}>
+                Mon – Sun: 10 AM – 9 PM
+              </div>
+            </div>
+            <div className="h-8 w-px" style={{ background: "var(--hairline-cream)" }} />
+            <div>
+              <div className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--m-gold-deep)" }}>
+                Call
+              </div>
+              <a href="tel:+917878464710" className="mt-1 flex items-center gap-1.5 text-[13px] font-light transition-colors hover:underline" style={{ color: "var(--ink-muted)" }}>
+                <Phone className="h-3 w-3" />
+                +91 78784 64710
+              </a>
+            </div>
+          </div>
 
-          <p className="max-w-xs text-xs font-light leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Premium salon for bespoke haircuts, luxury color, editorial styling &amp; polished finishing.
-          </p>
-
-          {/* Social icons */}
-          <div className="mt-4 flex items-center gap-2">
-            {[
-              { href: "https://www.instagram.com/lbthehairstudio/", label: "Instagram", icon: InstagramIcon, color: "#E1306C" },
-              { href: "https://www.facebook.com/lbthehairstudio", label: "Facebook", icon: FacebookIcon, color: "#1877F2" },
-              { href: "https://wa.me/7878464710", label: "WhatsApp", icon: WhatsAppIcon, color: "#25D366" },
-              { href: "https://maps.app.goo.gl/WPvPqqJLptTuARLZ8", label: "Maps", icon: MapPin, color: "var(--accent-text)" },
-            ].map(({ href, label, icon: Icon, color }) => (
+          <div className="mt-6 flex items-center gap-3">
+            {socialLinks.map(({ href, label, icon: Icon }) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-200"
-                style={{
-                  border: "1px solid var(--border)",
-                  background: "var(--surface)",
-                  color: color,
-                }}
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 hover:-translate-y-0.5"
+                style={{ border: "1px solid rgba(176,135,90,0.4)", color: "var(--m-gold-deep)", background: "var(--cream-soft)" }}
               >
-                <Icon className="h-3.5 w-3.5" />
+                <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
         </div>
 
-        {/* Studio links */}
-        <div>
-          <h4
-            className="mb-3 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: "var(--accent-text)" }}
-          >
-            Studio
-          </h4>
-          <ul className="space-y-2 text-xs" style={{ color: "var(--text-muted)" }}>
-            {["Book Appointment:/booking"].map((item) => {
-              const [name, href] = item.split(":");
-              return (
-                <li key={name}>
-                  <Link href={href} className="transition-colors hover:opacity-80" style={{ color: "inherit" }}>
-                    {name}
-                  </Link>
-                </li>
-              );
-            })}
-            <li>
-              <a
-                href="https://maps.app.goo.gl/WPvPqqJLptTuARLZ8"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:opacity-80"
-                style={{ color: "inherit" }}
-              >
-                Find Us on Maps
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Legal */}
-        <div>
-          <h4
-            className="mb-3 font-[family-name:var(--font-raleway)] text-[9px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: "var(--accent-text)" }}
-          >
-            Legal
-          </h4>
-          <ul className="space-y-2 text-xs" style={{ color: "var(--text-muted)" }}>
-            <li>
-              <Link href="/privacy" className="transition-colors hover:opacity-80" style={{ color: "inherit" }}>
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="transition-colors hover:opacity-80" style={{ color: "inherit" }}>
-                Terms of Service
-              </Link>
-            </li>
-          </ul>
+        <div className="hairline-gold mb-6" />
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {[
+            { name: "Services", href: "/services" },
+            { name: "Gallery", href: "/gallery" },
+            { name: "About", href: "/about" },
+            { name: "Reviews", href: "/reviews" },
+            { name: "Book", href: "/booking" },
+          ].map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em] transition-colors"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              {item.name}
+            </Link>
+          ))}
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div
-        className="px-4 py-3 text-center font-[family-name:var(--font-raleway)] text-[9px] uppercase tracking-[0.14em]"
-        style={{ borderTop: "1px solid var(--border)", color: "var(--text-subtle)" }}
+        className="px-5 py-4 text-center font-[family-name:var(--font-raleway)] text-[11px] uppercase tracking-[0.10em]"
+        style={{ borderTop: "1px solid rgba(176,135,90,0.18)", color: "var(--ink-subtle)" }}
       >
-        Copyright {new Date().getFullYear()} LB The Hair Studio. All rights reserved.
+        © {new Date().getFullYear()} LB The Hair Studio. All Rights Reserved.
       </div>
     </footer>
   );

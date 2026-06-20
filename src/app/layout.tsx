@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Cormorant_Garamond, Raleway } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 
@@ -50,16 +49,6 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-on-background selection:bg-[#D4AF37]/25 selection:text-[#FFF7EA]">
-        <Script id="theme-script" strategy="beforeInteractive">
-  {`
-    try {
-      var theme = localStorage.getItem('lb-theme') || 'dark';
-      document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
-    } catch (e) {
-      document.documentElement.dataset.theme = 'dark';
-    }
-  `}
-</Script>
         <QueryProvider>
           {children}
         </QueryProvider>

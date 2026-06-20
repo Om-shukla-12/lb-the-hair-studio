@@ -4,45 +4,76 @@ import { motion } from "framer-motion";
 
 export default function MissionStatement() {
   return (
-    <section className="py-24 px-4 md:px-8 bg-[var(--bg)] relative">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
+    <section className="px-5 py-12 md:px-8 md:py-20" style={{ background: "var(--cream)" }}>
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-14">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="relative h-[600px] rounded-2xl overflow-hidden shadow-[0_40px_80px_rgba(107,0,0,0.08)]"
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8 }}
+          className="relative h-[400px] overflow-hidden rounded-2xl md:h-[550px]"
+          style={{ border: "1px solid rgba(176,135,90,0.3)" }}
         >
-          <img 
-            alt="Interior view of a high-end salon" 
-            className="absolute inset-0 w-full h-full object-cover" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhoDjNzQk97DLvxtMitzsv6tnHHSfhujqeH327ur8pOqffMOJAAjNxNkhu5gEEeDlSfT_UymVjVymK593elcUTH6-QJCb5DKg06PMvsPqvGrGyHC7YA4yf4dndvJVDif_YntmjlR0d5UgPpvwKvzvpliPoHWe_mqa6m4VokTn_jcL_WL-H52OjEFCzDhmXSuoTXL_upEqxc0At7fnOKlwLpAX04bupXUSkoqT7l3Zb68ZzF8iTh-2fkQ5NwruC_I8R9pXo0vO-j0I"
+          <img
+            alt="Interior view of LB The Hair Studio"
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/photos/unnamed2.png"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(33,26,24,0.25), transparent)" }}
+          />
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="md:pl-16 flex flex-col justify-center h-full mt-12 md:mt-0"
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="flex flex-col justify-center"
         >
-          <span className="text-xs text-[#D4AF37] tracking-[0.2em] uppercase mb-4 block font-bold">The Mission</span>
-          <h2 className="font-serif text-3xl md:text-4xl text-[var(--text)] mb-8 font-bold">Confidence and Elegance, Mastered.</h2>
-          <p className="text-[var(--text-muted)] mb-6 text-lg font-light leading-relaxed">
-            Our philosophy is rooted in the belief that true luxury is whispering, not shouting. We curate bespoke styles that enhance your natural beauty, ensuring every client leaves feeling empowered, sophisticated, and undeniably elegant.
-          </p>
-          <p className="text-[var(--text-muted)] mb-6 text-lg font-light leading-relaxed">
-            As a proud L'Oréal Professionnel partner, we use only the finest professional-grade products and techniques to deliver transformative results.
-          </p>
-          <p className="text-[var(--text-muted)] mb-10 text-lg font-light leading-relaxed">
-            Every appointment is a curated journey. From the moment you step into our sanctuary, you are enveloped in an atmosphere of serene exclusivity, designed to relax the mind while we transform your look.
-          </p>
-          <div className="w-24 h-px bg-[#E6E0DA]"></div>
-        </motion.div>
+          <div className="mb-4 flex items-center gap-2.5">
+            <div className="h-6 w-[3px] rounded-sm" style={{ background: "var(--m-gold)" }} />
+            <span
+              className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.18em]"
+              style={{ color: "var(--m-gold-deep)" }}
+            >
+              The Mission
+            </span>
+          </div>
 
+          <h2
+            className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold leading-tight md:text-4xl"
+            style={{ color: "var(--ink)" }}
+          >
+            Confidence and Elegance, Mastered.
+          </h2>
+
+          <p
+            className="mt-4 text-sm font-light leading-relaxed md:text-base"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            Our philosophy is rooted in the belief that true luxury is whispering, not shouting.
+            We curate bespoke styles that enhance your natural beauty, ensuring every client leaves
+            feeling empowered, sophisticated, and undeniably elegant.
+          </p>
+          <p
+            className="mt-3 text-sm font-light leading-relaxed md:text-base"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            As a proud L&apos;Oréal Professionnel partner, we use only the finest professional-grade
+            products and techniques to deliver transformative results.
+          </p>
+          <p
+            className="mt-3 text-sm font-light leading-relaxed md:text-base"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            Every appointment is a curated journey — from the moment you step into our sanctuary,
+            you are enveloped in an atmosphere of serene exclusivity.
+          </p>
+
+          <div className="mt-6 h-px w-20" style={{ background: "linear-gradient(90deg, var(--m-gold), transparent)" }} />
+        </motion.div>
       </div>
     </section>
   );

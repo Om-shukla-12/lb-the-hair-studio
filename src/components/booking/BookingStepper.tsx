@@ -10,16 +10,16 @@ interface BookingStepperProps {
 
 export default function BookingStepper({ currentStep, steps }: BookingStepperProps) {
   return (
-    <div className="w-full max-w-4xl mx-auto py-4 px-4 sm:px-6">
-      <div className="relative flex items-center justify-between w-full">
+    <div className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6">
+      <div className="relative flex w-full items-center justify-between">
         {/* Progress track */}
         <div
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1.5px]"
-          style={{ background: "var(--border)" }}
+          className="absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2"
+          style={{ background: "var(--hairline-cream)" }}
         >
           <motion.div
             className="h-full"
-            style={{ background: "var(--primary)" }}
+            style={{ background: "var(--m-gold)" }}
             initial={{ width: 0 }}
             animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -31,20 +31,20 @@ export default function BookingStepper({ currentStep, steps }: BookingStepperPro
           const isActive = currentStep === index;
 
           return (
-            <div key={step} className="relative flex flex-col items-center z-10">
+            <div key={step} className="relative z-10 flex flex-col items-center">
               <motion.div
                 initial={false}
                 animate={{
                   backgroundColor:
-                    isCompleted || isActive ? "#8B0000" : "var(--surface)",
+                    isCompleted || isActive ? "var(--wine)" : "var(--cream-soft)",
                   borderColor:
-                    isCompleted || isActive ? "#8B0000" : "var(--border)",
+                    isCompleted || isActive ? "var(--wine)" : "var(--hairline-cream)",
                   scale: isActive ? 1.08 : 1,
-                  boxShadow: isActive ? "0 0 20px rgba(139,0,0,0.25)" : "none",
+                  boxShadow: isActive ? "0 0 20px rgba(110,26,43,0.25)" : "none",
                 }}
-                className="w-8 h-8 rounded-md border-2 flex items-center justify-center transition-colors duration-300 text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-md border-2 transition-colors duration-300"
                 style={{
-                  color: isCompleted || isActive ? "#fff" : "var(--text-subtle)",
+                  color: isCompleted || isActive ? "#F3E4D8" : "var(--ink-subtle)",
                 }}
               >
                 {isCompleted ? (
@@ -61,11 +61,11 @@ export default function BookingStepper({ currentStep, steps }: BookingStepperPro
               </motion.div>
 
               {/* Step label */}
-              <div className="absolute top-10 hidden sm:block text-center w-20 -ml-10 left-1/2">
+              <div className="absolute top-10 hidden w-20 -translate-x-1/2 text-center sm:block" style={{ left: "50%" }}>
                 <span
-                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  className="font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.10em]"
                   style={{
-                    color: isActive || isCompleted ? "var(--primary)" : "var(--text-subtle)",
+                    color: isActive || isCompleted ? "var(--m-gold-deep)" : "var(--ink-subtle)",
                   }}
                 >
                   {step}

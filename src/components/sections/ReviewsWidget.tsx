@@ -3,51 +3,67 @@
 import Script from "next/script";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import SectionMotif from "@/components/ui/SectionMotif";
 
 export default function ReviewsWidget() {
   const [isLoading, setIsLoading] = useState(true);
   const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(() => {
       if (widgetRef.current && widgetRef.current.children.length > 0) {
         setIsLoading(false);
         observer.disconnect();
       }
     });
-
     if (widgetRef.current) {
       observer.observe(widgetRef.current, { childList: true, subtree: true });
     }
-
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section
-      className="relative overflow-hidden px-4 py-12 md:px-8 md:py-18"
-      style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}
-    >
-      <div className="mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
+    <section className="maison-cream px-5 pb-12 pt-10 md:px-8 md:pb-16 md:pt-14">
+      <div className="mx-auto max-w-6xl">
+        <SectionMotif label="Client Love" tone="cream" />
+
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-10"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="mt-4 text-center font-[family-name:var(--font-cormorant)] text-4xl font-semibold leading-none md:text-5xl"
+          style={{ color: "var(--ink)" }}
+        >
+          Kind Words
+        </motion.h2>
+
+        {/* Rating badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mx-auto mt-6 mb-8 flex w-fit items-center gap-3 px-5 py-3"
+          style={{ background: "var(--cream-soft)", border: "1px solid rgba(198,160,106,0.3)" }}
         >
           <span
-            className="mb-3 block font-[family-name:var(--font-raleway)] text-[10px] font-bold uppercase tracking-[0.24em]"
-            style={{ color: "var(--accent-text)" }}
+            className="font-[family-name:var(--font-cormorant)] text-3xl font-semibold"
+            style={{ color: "var(--ink)" }}
           >
-            Client Love
+            5.0
           </span>
-          <h2
-            className="font-[family-name:var(--font-cormorant)] text-4xl font-semibold leading-tight md:text-5xl"
-            style={{ color: "var(--text)" }}
-          >
-            What Our Clients Say
-          </h2>
+          <div>
+            <div className="text-sm tracking-widest" style={{ color: "var(--m-gold)" }}>
+              ★★★★★
+            </div>
+            <div
+              className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.12em]"
+              style={{ color: "var(--ink-subtle)" }}
+            >
+              Google Reviews
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
@@ -55,17 +71,28 @@ export default function ReviewsWidget() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="min-h-[400px] relative"
+          className="relative min-h-[400px]"
         >
           {isLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 mb-4" style={{ borderColor: "var(--border)", borderTopColor: "var(--accent-text)" }} />
-              <p className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: "var(--accent-text)", fontFamily: "var(--font-raleway)" }}>loading public reviews...</p>
+            <div className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center">
+              <div
+                className="mb-4 h-8 w-8 animate-spin rounded-full border-2"
+                style={{ borderColor: "var(--hairline-cream)", borderTopColor: "var(--m-gold)" }}
+              />
+              <p
+                className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em]"
+                style={{ color: "var(--m-gold)" }}
+              >
+                loading reviews...
+              </p>
             </div>
           )}
-          {/* Elfsight Google Reviews | Lb the hair studio */}
           <Script src="https://elfsightcdn.com/platform.js" strategy="lazyOnload" />
-          <div ref={widgetRef} className="elfsight-app-cff80c6c-abd1-4f3b-bd0a-6353f6c883a5 relative z-10 w-full" data-elfsight-app-lazy></div>
+          <div
+            ref={widgetRef}
+            className="elfsight-app-cff80c6c-abd1-4f3b-bd0a-6353f6c883a5 relative z-10 w-full"
+            data-elfsight-app-lazy
+          />
         </motion.div>
       </div>
     </section>

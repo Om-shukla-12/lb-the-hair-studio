@@ -4,281 +4,85 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TopNavBar from "@/components/layout/TopNavBar";
 import Footer from "@/components/layout/Footer";
+import PageHeader from "@/components/ui/PageHeader";
+import { X, ChevronLeft, ChevronRight, Play } from "lucide-react";
 
-interface GalleryItem {
-  id: string;
-  type: "image" | "video";
-  src: string;
-  title: string;
-  category: "styling" | "color" | "studio" | "transformation";
-}
+interface GalleryItem { id: string; type: "image" | "video"; src: string; title: string; }
 
 const galleryItems: GalleryItem[] = [
-  {
-    id: "1",
-    type: "image",
-    src: "/photos/unnamed2.png",
-    title: "Sleek Couture Waves",
-    category: "styling",
-  },
-  {
-    id: "2",
-    type: "image",
-    src: "/photos/unnamed3.png",
-    title: "Radiant Golden Balayage",
-    category: "color",
-  },
-  {
-    id: "3",
-    type: "image",
-    src: "/photos/unnamed.png",
-    title: "Lived-In Caramel Highlights",
-    category: "color",
-  },
-  {
-    id: "4",
-    type: "video",
-    src: "/photos/videoplayback.mp4",
-    title: "Transformation in Motion",
-    category: "transformation",
-  },
-  {
-    id: "5",
-    type: "image",
-    src: "/photos/download.png",
-    title: "Precision Styling Details",
-    category: "styling",
-  },
-  {
-    id: "6",
-    type: "image",
-    src: "/photos/unnamed.png",
-    title: "Volume & Texture",
-    category: "styling",
-  },
-  {
-    id: "7",
-    type: "image",
-    src: "/photos/unnamed2.png",
-    title: "Silky Smooth Finish",
-    category: "styling",
-  },
+  { id: "1", type: "image", src: "/photos/unnamed2.png", title: "Sleek Couture Waves" },
+  { id: "2", type: "image", src: "/photos/unnamed3.png", title: "Radiant Golden Balayage" },
+  { id: "3", type: "image", src: "/photos/unnamed.png", title: "Lived-In Caramel Highlights" },
+  { id: "4", type: "video", src: "/photos/videoplayback.mp4", title: "Transformation in Motion" },
+  { id: "6", type: "image", src: "/photos/unnamed.png", title: "Volume & Texture" },
+  { id: "7", type: "image", src: "/photos/unnamed2.png", title: "Silky Smooth Finish" },
 ];
 
 export default function Gallery() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
   const selectedItem = selectedIndex !== null ? galleryItems[selectedIndex] : null;
+  const goNext = useCallback(() => setSelectedIndex((p) => (p === null ? null : (p + 1) % galleryItems.length)), []);
+  const goPrev = useCallback(() => setSelectedIndex((p) => (p === null ? null : (p - 1 + galleryItems.length) % galleryItems.length)), []);
+  const close = useCallback(() => setSelectedIndex(null), []);
 
-  const goNext = useCallback(() => {
-    setSelectedIndex((prev) =>
-      prev === null ? null : (prev + 1) % galleryItems.length
-    );
-  }, []);
-
-  const goPrev = useCallback(() => {
-    setSelectedIndex((prev) =>
-      prev === null ? null : (prev - 1 + galleryItems.length) % galleryItems.length
-    );
-  }, []);
-
-  const closeLightbox = useCallback(() => setSelectedIndex(null), []);
-
-  // Keyboard navigation
   useEffect(() => {
     if (selectedIndex === null) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") goNext();
-      else if (e.key === "ArrowLeft") goPrev();
-      else if (e.key === "Escape") closeLightbox();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [selectedIndex, goNext, goPrev, closeLightbox]);
+    const h = (e: KeyboardEvent) => { if (e.key === "ArrowRight") goNext(); else if (e.key === "ArrowLeft") goPrev(); else if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [selectedIndex, goNext, goPrev, close]);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)", color: "var(--text)" }}>
+    <div className="flex min-h-screen flex-col" style={{ background: "var(--cream)", color: "var(--ink)" }}>
       <TopNavBar />
-
-      <main className="flex-grow pt-32 pb-16">
-        {/* Header Section */}
-        <section className="text-center px-4 md:px-8 mb-16">
-          <div className="max-w-3xl mx-auto">
-            <motion.span
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-[10px] md:text-xs text-[#D4AF37] uppercase tracking-[0.2em] mb-4 block font-bold"
-            >
-              The Portfolio
-            </motion.span>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="font-serif text-4xl md:text-5xl lg:text-6xl text-[var(--primary)] mb-6 font-bold tracking-tight"
-            >
-              Masterpieces in Motion
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base md:text-lg text-[var(--text-subtle)] max-w-2xl mx-auto font-light leading-relaxed"
-            >
-              Step into a visual journey showcasing our signature transformations,
-              meticulous coloring, and custom-tailored editorial hair styles.
-            </motion.p>
-          </div>
-        </section>
-
-        {/* Masonry Gallery Grid */}
-        <section className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
-          <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6">
+      <main className="flex-grow">
+        <PageHeader eyebrow="The Portfolio" title="Masterpieces in Motion" subtitle="Signature transformations, meticulous coloring, and editorial styling." />
+        <section className="mx-auto max-w-[1400px] px-4 py-10 md:px-6 md:py-14">
+          <div className="columns-2 gap-3 space-y-3 md:columns-3 md:gap-4 md:space-y-4 lg:columns-4">
             {galleryItems.map((item, index) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                key={item.id}
+              <motion.div key={item.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.5, delay: index * 0.06 }}
                 onClick={() => setSelectedIndex(index)}
-                className="group relative overflow-hidden rounded-xl bg-[var(--surface)] cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 break-inside-avoid"
-              >
-                <div className="relative w-full overflow-hidden">
-                  {item.type === "video" ? (
-                    <VideoPreview src={item.src} />
-                  ) : (
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  )}
-                  {/* Subtle hover dim only — no text */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-500 z-10" />
+                className="group relative cursor-pointer overflow-hidden break-inside-avoid" style={{ border: "1px solid rgba(176,135,90,0.3)", borderRadius: "8px" }}>
+                {item.type === "video" ? <VideoPreview src={item.src} /> : <img src={item.src} alt={item.title} className="h-auto w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />}
+                <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.5))" }}>
+                  <span className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.10em]" style={{ color: "rgba(255,255,255,0.9)" }}>{item.title}</span>
                 </div>
               </motion.div>
             ))}
           </div>
         </section>
-
-        {/* Lightbox Overlay */}
-        <AnimatePresence>
-          {selectedItem && selectedIndex !== null && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeLightbox}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md"
-            >
-              {/* Close button */}
-              <button
-                onClick={closeLightbox}
-                className="absolute top-5 right-5 text-white hover:text-[#D4AF37] transition-colors z-50 flex items-center justify-center p-2 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/20"
-              >
-                <span className="material-symbols-outlined text-3xl">close</span>
-              </button>
-
-              {/* Counter */}
-              <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest uppercase z-50 select-none">
-                {selectedIndex + 1} / {galleryItems.length}
-              </div>
-
-              {/* Prev button */}
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/25 text-white transition-all duration-200 hover:scale-110"
-                aria-label="Previous image"
-              >
-                <span className="material-symbols-outlined text-3xl">chevron_left</span>
-              </button>
-
-              {/* Next button */}
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/25 text-white transition-all duration-200 hover:scale-110"
-                aria-label="Next image"
-              >
-                <span className="material-symbols-outlined text-3xl">chevron_right</span>
-              </button>
-
-              {/* Media — animated on change */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedItem.id}
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center justify-center w-full h-full px-16 md:px-24 py-14"
-                >
-                  {selectedItem.type === "video" ? (
-                    <video
-                      src={selectedItem.src}
-                      controls
-                      autoPlay
-                      className="max-w-full max-h-[85vh] rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.6)]"
-                    />
-                  ) : (
-                    <img
-                      src={selectedItem.src}
-                      alt={selectedItem.title}
-                      className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.6)]"
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </main>
-
       <Footer />
+
+      <AnimatePresence>
+        {selectedItem && selectedIndex !== null && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close} className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(33,26,24,0.95)", backdropFilter: "blur(8px)" }}>
+            <button onClick={close} className="absolute right-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-full transition-opacity hover:opacity-80" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }} aria-label="Close"><X className="h-5 w-5" /></button>
+            <div className="absolute left-1/2 top-5 -translate-x-1/2 select-none font-[family-name:var(--font-raleway)] text-[11px] uppercase tracking-[0.16em]" style={{ color: "rgba(255,255,255,0.4)" }}>{selectedIndex + 1} / {galleryItems.length}</div>
+            <button onClick={(e) => { e.stopPropagation(); goPrev(); }} className="absolute left-3 top-1/2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 md:left-5" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }} aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
+            <button onClick={(e) => { e.stopPropagation(); goNext(); }} className="absolute right-3 top-1/2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 md:right-5" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }} aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
+            <AnimatePresence mode="wait">
+              <motion.div key={selectedItem.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} transition={{ duration: 0.2 }} onClick={(e) => e.stopPropagation()} className="flex h-full w-full items-center justify-center px-14 py-14 md:px-20">
+                {selectedItem.type === "video" ? <video src={selectedItem.src} controls autoPlay className="max-h-[85vh] max-w-full rounded-xl" /> : <img src={selectedItem.src} alt={selectedItem.title} className="max-h-[85vh] max-w-full rounded-xl object-contain" />}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-// Video preview card — hover to play, no text
 function VideoPreview({ src }: { src: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handleMouseEnter = async () => {
-    setIsPlaying(true);
-    if (videoRef.current) {
-      try { await videoRef.current.play(); } catch {}
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  };
-
+  const ref = useRef<HTMLVideoElement>(null);
+  const [p, setP] = useState(false);
   return (
-    <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full h-full"
-    >
-      <video
-        ref={videoRef}
-        src={src}
-        muted
-        loop
-        playsInline
-        className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-      />
-      {!isPlaying && (
-        <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white p-2 rounded-full flex items-center justify-center border border-white/20">
-          <span className="material-symbols-outlined text-sm">play_arrow</span>
+    <div onMouseEnter={async () => { setP(true); try { await ref.current?.play(); } catch {} }} onMouseLeave={() => { setP(false); if (ref.current) { ref.current.pause(); ref.current.currentTime = 0; } }} className="relative">
+      <video ref={ref} src={src} muted loop playsInline className="h-auto w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      {!p && (
+        <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+          <Play className="h-3.5 w-3.5 text-white" fill="white" />
         </div>
       )}
     </div>
