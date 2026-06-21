@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSlots, useBarbers } from "../../hooks/useBooking";
-import { Check, Clock, Sun, Sunset, Moon, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Clock, Sun, Sunset, Moon, Users, ChevronDown, ChevronUp, User } from "lucide-react";
 import { TimeSlot } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
 
@@ -37,8 +37,14 @@ export default function SlotSelection({
   onNext,
   onBack,
 }: SlotSelectionProps) {
-  const { data: slots, isLoading: loadingSlots, isError } = useSlots(selectedDate);
+  const [selectedStylist, setSelectedStylist] = useState<string | null>(null);
+  const { data: slots, isLoading: loadingSlots, isError } = useSlots(selectedDate, selectedStylist || undefined);
   const { data: barbers } = useBarbers();
+
+  const handleStylistChange = (stylistId: string | null) => {
+    setSelectedStylist(stylistId);
+    onSelectTime("");
+  };
 
   // Count staff who actually provide at least one service
   const serviceProvidingStaffCount = useMemo(() => {
@@ -50,7 +56,11 @@ export default function SlotSelection({
   }, [barbers]);
 
   // Adjust a slot's counts to cap at service-providing staff only
+  // When filtering by a specific stylist, skip the adjustment — API already returns per-employee data
   const adjustedSlot = (slot: TimeSlot): { available: number; total: number } => {
+    if (selectedStylist) {
+      return { available: slot.available_count, total: slot.total_count };
+    }
     if (serviceProvidingStaffCount === null) {
       return { available: slot.available_count, total: slot.total_count };
     }
@@ -146,12 +156,18 @@ export default function SlotSelection({
                   color: isSelected ? '#fff' : 'var(--primary)',
                 }}
               >
-                <Users className="w-2.5 h-2.5 flex-shrink-0" />
-                <span>{available}/{total} slots</span>
+                {selectedStylist ? (
+                  <span>Available</span>
+                ) : (
+                  <>
+                    <Users className="w-2.5 h-2.5 flex-shrink-0" />
+                    <span>{available}/{total} slots</span>
+                  </>
+                )}
               </div>
             ) : (
-              <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-subtle)' }}>
-                {slot.is_past ? "Past" : "Full"}
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-subtle)' }}>
+                {slot.is_past ? "Past" : selectedStylist ? "Booked" : "Full"}
               </span>
             )}
 
@@ -191,6 +207,41 @@ export default function SlotSelection({
             day: "numeric",
           })}
         </p>
+
+        {/* Stylist Filter */}
+        {barbers && barbers.filter(b => b.is_active && Array.isArray(b.services) && b.services.length > 0).length > 0 && (
+          <div className="mt-5 mb-1">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5" style={{ color: 'var(--text)' }}>
+              <User className="w-3.5 h-3.5" />
+              Filter by Stylist
+            </h3>
+            <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-1 -mx-4 px-4 md:mx-0 md:px-0">
+              <button
+                onClick={() => handleStylistChange(null)}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                  selectedStylist === null
+                    ? "bg-[var(--primary)] text-white shadow-sm"
+                    : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[rgba(139,0,0,0.05)] hover:text-[var(--primary)] hover:border-[rgba(139,0,0,0.2)]"
+                }`}
+              >
+                Anyone Available
+              </button>
+              {barbers.filter(b => b.is_active && Array.isArray(b.services) && b.services.length > 0).map((barber) => (
+                <button
+                  key={barber.id}
+                  onClick={() => handleStylistChange(barber.id)}
+                  className={`whitespace-nowrap flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                    selectedStylist === barber.id
+                      ? "bg-[var(--primary)] text-white shadow-sm"
+                      : "bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[rgba(139,0,0,0.05)] hover:text-[var(--primary)] hover:border-[rgba(139,0,0,0.2)]"
+                  }`}
+                >
+                  {barber.full_name?.split(' ')[0] || "Stylist"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Legend */}
         <div className="flex items-center gap-3 mt-2 flex-wrap">
@@ -317,14 +368,14 @@ export default function SlotSelection({
         <div ref={continueRef}>
           <button
             onClick={onNext}
-            disabled={!selectedTime}
+            disabled={!selectedTime || (slots && ![...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0))}
             className="px-8 py-3 rounded-full text-white font-bold uppercase tracking-widest text-xs transition-all duration-300"
             style={{
-              background: selectedTime ? 'var(--primary)' : 'var(--surface)',
-              color: selectedTime ? '#fff' : 'var(--text-subtle)',
-              cursor: selectedTime ? 'pointer' : 'not-allowed',
-              boxShadow: selectedTime ? '0 8px 20px rgba(139,0,0,0.22)' : undefined,
-              border: selectedTime ? 'none' : '1px solid var(--border)',
+              background: selectedTime && (!slots || [...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0)) ? 'var(--primary)' : 'var(--surface)',
+              color: selectedTime && (!slots || [...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0)) ? '#fff' : 'var(--text-subtle)',
+              cursor: selectedTime && (!slots || [...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0)) ? 'pointer' : 'not-allowed',
+              boxShadow: selectedTime && (!slots || [...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0)) ? '0 8px 20px rgba(139,0,0,0.22)' : undefined,
+              border: selectedTime && (!slots || [...(slots.morning||[]), ...(slots.afternoon||[]), ...(slots.evening||[])].some(s => s.time === selectedTime && !s.is_past && s.available_count > 0)) ? 'none' : '1px solid var(--border)',
             }}
           >
             Continue to Services

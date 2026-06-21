@@ -1,0 +1,53 @@
+[
+  {
+    "id": "81664c96-74a9-4076-b9ea-3e7b3a07b532",
+    "name": "Hair colour",
+    "description": "Professional coloring service delivering vibrant, long-lasting results while maintaining hair health and shine.",
+    "duration_minutes": 45,
+    "price": "499.00",
+    "currency": "INR",
+    "tag": "Hair",
+    "color_code": "#6366f1",
+    "gender": "unisex",
+    "is_active": true,
+    "created_at": "2026-06-05T07:54:27.644439Z",
+    "buffer_time_override": null,
+    "advance_notice_hours": 0,
+    "max_advance_days": 60,
+    "max_bookings_per_day": null
+  },
+  {
+    "id": "071aaa21-56ce-45f7-9051-e73d50aba946",
+    "name": "Haircut",
+    "description": "Precision haircut tailored to your style, face shape, and hair texture for a fresh, confident look.",
+    "duration_minutes": 30,
+    "price": "450.00",
+    "currency": "INR",
+    "tag": "Hair",
+    "color_code": "#6366f1",
+    "gender": "male",
+    "is_active": true,
+    "created_at": "2026-06-05T07:53:08.136940Z",
+    "buffer_time_override": null,
+    "advance_notice_hours": 0,
+    "max_advance_days": 60,
+    "max_bookings_per_day": null
+  },
+  {
+    "id": "026be405-fd81-4bc3-8567-bddd6679b90b",
+    "name": "Shaving",
+    "description": "Expert beard shaping and traditional shaving experience for a clean, refined, and polished appearance.",
+    "duration_minutes": 20,
+    "price": "300.00",
+    "currency": "INR",
+    "tag": "Beard",
+    "color_code": "#10b981",
+    "gender": "male",
+    "is_active": true,
+    "created_at": "2026-06-05T07:53:52.532645Z",
+    "buffer_time_override": null,
+    "advance_notice_hours": 0,
+    "max_advance_days": 60,
+    "max_bookings_per_day": null
+  }
+]

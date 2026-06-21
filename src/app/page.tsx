@@ -6,7 +6,6 @@ import HeroSection from "@/components/sections/HeroSection";
 import CTAButtons from "@/components/sections/CTAButtons";
 import StatsSection from "@/components/sections/StatsSection";
 import ServiceCards from "@/components/sections/ServiceCards";
-import LorealPartnership from "@/components/sections/LorealPartnership";
 import GalleryTeaser from "@/components/sections/GalleryTeaser";
 import ReviewsWidget from "@/components/sections/ReviewsWidget";
 import VisitUs from "@/components/sections/VisitUs";
@@ -21,7 +20,6 @@ export default function Home() {
         <CTAButtons />
         <StatsSection />
         <ServiceCards />
-        <LorealPartnership />
         <GalleryTeaser />
         <ReviewsWidget />
         <VisitUs />

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: 'https://calendiq-backend.onrender.com',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'X-Tenant-Slug': 'lb-the-hair-studio',
+    'X-Tenant-Slug': process.env.NEXT_PUBLIC_TENANT_SLUG || '',
   },
 });

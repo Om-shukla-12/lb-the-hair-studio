@@ -19,9 +19,13 @@ export const getCalendarAvailability = async (
   return data;
 };
 
-export const getSlots = async (date: string): Promise<DaySlots> => {
+export const getSlots = async (date: string, employeeId?: string): Promise<DaySlots> => {
+  const params: Record<string, string> = { date };
+  if (employeeId) {
+    params.employee_id = employeeId;
+  }
   const { data } = await apiClient.get<DaySlots>(`/v1/public/booking/slots`, {
-    params: { date },
+    params,
   });
   return data;
 };

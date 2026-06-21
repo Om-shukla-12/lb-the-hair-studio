@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useServices } from "@/hooks/useBooking";
 import { useMemo, useState, useEffect } from "react";
-import { ArrowRight, Clock, Search, ChevronDown } from "lucide-react";
+import { ArrowRight, Clock, Search, ChevronDown, Filter } from "lucide-react";
 import ScissorsLoader from "@/components/ui/ScissorsLoader";
 
 const ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx"];
@@ -15,6 +15,8 @@ const ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi"
 export default function ServicesPage() {
   const { data: services, isLoading } = useServices();
   const [searchQuery, setSearchQuery] = useState("");
+  const [genderFilter, setGenderFilter] = useState("All");
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("All");
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const groupedServices = useMemo(() => {
@@ -27,6 +29,12 @@ export default function ServicesPage() {
           (s.tag || "").toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+    if (genderFilter !== "All") {
+      filtered = filtered.filter((s) => !s.gender || s.gender.toLowerCase() === genderFilter.toLowerCase() || s.gender.toLowerCase() === "unisex" || s.gender.toLowerCase() === "both");
+    }
+    if (selectedCategoryFilter !== "All") {
+      filtered = filtered.filter((s) => (s.tag || "Other") === selectedCategoryFilter);
+    }
     const groups: Record<string, typeof filtered> = {};
     filtered.forEach((s) => {
       const cat = s.tag || "Other";
@@ -34,9 +42,35 @@ export default function ServicesPage() {
       groups[cat].push(s);
     });
     return groups;
-  }, [services, searchQuery]);
+  }, [services, searchQuery, genderFilter, selectedCategoryFilter]);
 
-  const categories = useMemo(() => Object.keys(groupedServices), [groupedServices]);
+  const allCategories = useMemo(() => {
+    if (!services) return ["All"];
+    const tags = Array.from(new Set(services.map((s) => s.tag || "Other")));
+    const orderPriority = ["haircut", "beard", "hair color", "haircolor", "color", "styling", "treatment", "facial"];
+    tags.sort((a, b) => {
+      const aIdx = orderPriority.findIndex(p => a.toLowerCase().includes(p));
+      const bIdx = orderPriority.findIndex(p => b.toLowerCase().includes(p));
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return ["All", ...tags];
+  }, [services]);
+
+  const categories = useMemo(() => {
+    const keys = Object.keys(groupedServices);
+    const orderPriority = ["haircut", "beard", "hair color", "haircolor", "color", "styling", "treatment", "facial"];
+    return keys.sort((a, b) => {
+      const aIdx = orderPriority.findIndex(p => a.toLowerCase().includes(p));
+      const bIdx = orderPriority.findIndex(p => b.toLowerCase().includes(p));
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return a.localeCompare(b);
+    });
+  }, [groupedServices]);
 
   useEffect(() => {
     if (categories.length > 0 && openCategory === null) {
@@ -53,18 +87,18 @@ export default function ServicesPage() {
       <TopNavBar />
       <main className="flex-grow" style={{ background: "var(--cream)", color: "var(--ink)" }}>
         <PageHeader
-          eyebrow="L'Oréal Professionnel Partner"
+          eyebrow="Artistic Unisex Salon"
           title="Our Services"
-          subtitle="Luxury treatments crafted with premium L'Oréal Professionnel products."
+          subtitle="Luxury treatments crafted with premium products."
         />
 
         <section className="mx-auto max-w-3xl px-5 py-10 md:px-8 md:py-14">
-          {/* Search */}
+          {/* Search and Filters */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mx-auto mb-8 max-w-md"
+            className="mx-auto mb-8 max-w-md space-y-4"
           >
             <div className="relative">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-subtle)" }} />
@@ -80,6 +114,52 @@ export default function ServicesPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+            </div>
+            
+            {/* Gender Filter */}
+            <div className="flex items-center gap-2 justify-center">
+              <Filter className="h-4 w-4" style={{ color: "var(--ink-subtle)" }} />
+              <div className="flex gap-2">
+                {["All", "Male", "Female"].map((gender) => (
+                  <button
+                    key={gender}
+                    onClick={() => setGenderFilter(gender)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 ${
+                      genderFilter === gender
+                        ? "text-white shadow-sm"
+                        : "border border-[rgba(176,135,90,0.3)] text-[var(--ink-subtle)] hover:bg-[rgba(176,135,90,0.1)]"
+                    }`}
+                    style={{
+                      background: genderFilter === gender ? "var(--m-gold)" : "var(--cream-soft)",
+                    }}
+                  >
+                    {gender}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Chips */}
+            <div className="flex overflow-x-auto hide-scrollbar gap-1.5 pb-1 -mx-5 px-5 md:mx-0 md:px-0 pt-2">
+              {allCategories.map((cat) => {
+                const isSelected = selectedCategoryFilter === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategoryFilter(cat)}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                      isSelected
+                        ? "text-white shadow-sm"
+                        : "border border-[rgba(176,135,90,0.3)] text-[var(--ink-subtle)] hover:bg-[rgba(176,135,90,0.1)]"
+                    }`}
+                    style={{
+                      background: isSelected ? "var(--m-gold)" : "var(--cream-soft)",
+                    }}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
 
@@ -188,25 +268,38 @@ export default function ServicesPage() {
                                   >
                                     {service.name}
                                   </div>
-                                  <div className="mt-1 flex items-center gap-1.5">
-                                    <Clock className="h-2.5 w-2.5" style={{ color: "var(--ink-subtle)" }} />
+                                  <div className="mt-1.5 flex items-center gap-2 flex-wrap">
                                     <span
-                                      className="font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.08em]"
+                                      className="flex items-center font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.08em]"
                                       style={{ color: "var(--ink-subtle)" }}
                                     >
+                                      <Clock className="h-3 w-3 mr-1" />
                                       {service.duration_minutes} min
                                     </span>
+                                    {service.tag && (
+                                      <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: "rgba(176,135,90,0.1)", color: "var(--m-gold-deep)" }}>
+                                        {service.tag}
+                                      </span>
+                                    )}
+                                    {service.gender && (
+                                      <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.05)", color: "var(--ink-subtle)" }}>
+                                        {service.gender}
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
-                                <span
-                                  className="flex-shrink-0 font-[family-name:var(--font-cormorant)] text-base font-semibold md:text-lg"
-                                  style={{ color: "var(--ink)" }}
-                                >
-                                  {service.currency === "INR" ? "₹" : service.currency}
-                                  {parseFloat(service.price).toLocaleString()}
-                                </span>
+                                <div className="flex flex-col items-end flex-shrink-0 ml-2">
+                                  <span
+                                    className="font-[family-name:var(--font-cormorant)] text-base font-semibold md:text-lg leading-none"
+                                    style={{ color: "var(--ink)" }}
+                                  >
+                                    {service.currency === "INR" ? "₹" : service.currency}
+                                    {parseFloat(service.price).toLocaleString()}
+                                  </span>
+                                  <span className="text-[9px] uppercase tracking-wider mt-1" style={{ color: "var(--ink-subtle)" }}>on words</span>
+                                </div>
                                 <ArrowRight
-                                  className="maison-row-arrow h-4 w-4 flex-shrink-0"
+                                  className="maison-row-arrow h-4 w-4 flex-shrink-0 ml-2"
                                   style={{ color: "var(--m-gold)" }}
                                 />
                               </Link>

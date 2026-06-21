@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -12,7 +13,19 @@ const ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"];
 
 export default function ServiceCards() {
   const { data: services, isLoading } = useServices();
-  const displayServices = services?.slice(0, 6) || [];
+
+  const groupedServices = useMemo(() => {
+    if (!services) return {};
+    const groups: Record<string, typeof services> = {};
+    services.forEach((s) => {
+      const cat = s.tag || "Other";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(s);
+    });
+    return groups;
+  }, [services]);
+
+  const displayCategories = useMemo(() => Object.keys(groupedServices).slice(0, 6), [groupedServices]);
 
   return (
     <section className="maison-cream-soft px-5 pb-20 pt-10 md:px-8 md:pb-16 md:pt-14" id="services">
@@ -56,7 +69,7 @@ export default function ServiceCards() {
               <div className="mt-4 flex items-center justify-between px-1">
                 <div>
                   <div className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--m-gold)" }}>
-                    L&apos;Oréal Professionnel
+                    Artistic Unisex Salon
                   </div>
                   <div className="mt-0.5 font-[family-name:var(--font-cormorant)] text-sm italic" style={{ color: "var(--ink-muted)" }}>
                     Premium products, expert hands
@@ -80,57 +93,52 @@ export default function ServiceCards() {
               </div>
             ) : (
               <div className="flex flex-col">
-                {displayServices.map((service, index) => (
-                  <motion.div
-                    key={service.id}
-                    initial={{ opacity: 0, y: 14 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                  >
-                    <Link
-                      href="/booking"
-                      className="maison-row flex items-center gap-3.5 px-2 py-4 md:px-3 md:py-5"
-                      style={{
-                        borderTop: "1px solid var(--hairline-cream)",
-                        borderBottom: index === displayServices.length - 1 ? "1px solid var(--hairline-cream)" : "none",
-                      }}
+                {displayCategories.map((category, index) => {
+                  const categoryServices = groupedServices[category];
+                  return (
+                    <motion.div
+                      key={category}
+                      initial={{ opacity: 0, y: 14 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-40px" }}
+                      transition={{ duration: 0.5, delay: index * 0.05 }}
                     >
-                      <span
-                        className="w-7 flex-shrink-0 font-[family-name:var(--font-cormorant)] text-sm italic md:w-9 md:text-base"
-                        style={{ color: "var(--m-gold)" }}
+                      <Link
+                        href="/services"
+                        className="maison-row flex items-center gap-3.5 px-2 py-4 md:px-3 md:py-5"
+                        style={{
+                          borderTop: "1px solid var(--hairline-cream)",
+                          borderBottom: index === displayCategories.length - 1 ? "1px solid var(--hairline-cream)" : "none",
+                        }}
                       >
-                        {ROMAN[index]}.
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div
-                          className="font-[family-name:var(--font-cormorant)] text-lg font-semibold leading-tight md:text-xl"
-                          style={{ color: "var(--ink)" }}
+                        <span
+                          className="w-7 flex-shrink-0 font-[family-name:var(--font-cormorant)] text-sm italic md:w-9 md:text-base"
+                          style={{ color: "var(--m-gold)" }}
                         >
-                          {service.name}
+                          {ROMAN[index]}.
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className="font-[family-name:var(--font-cormorant)] text-lg font-semibold leading-tight md:text-xl"
+                            style={{ color: "var(--ink)" }}
+                          >
+                            {category}
+                          </div>
+                          <div
+                            className="mt-1 truncate font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.10em]"
+                            style={{ color: "var(--ink-subtle)" }}
+                          >
+                            {categoryServices.length} {categoryServices.length === 1 ? "Service" : "Services"}
+                          </div>
                         </div>
-                        <div
-                          className="mt-1 truncate font-[family-name:var(--font-raleway)] text-[11px] font-semibold uppercase tracking-[0.10em]"
-                          style={{ color: "var(--ink-subtle)" }}
-                        >
-                          {service.duration_minutes} min
-                          {service.tag ? ` · ${service.tag}` : ""}
-                        </div>
-                      </div>
-                      <span
-                        className="flex-shrink-0 font-[family-name:var(--font-cormorant)] text-base font-semibold md:text-lg"
-                        style={{ color: "var(--ink)" }}
-                      >
-                        {service.currency === "INR" ? "₹" : service.currency}
-                        {parseFloat(service.price).toLocaleString()}
-                      </span>
-                      <ArrowRight
-                        className="maison-row-arrow h-4 w-4 flex-shrink-0"
-                        style={{ color: "var(--m-gold)" }}
-                      />
-                    </Link>
-                  </motion.div>
-                ))}
+                        <ArrowRight
+                          className="maison-row-arrow h-4 w-4 flex-shrink-0"
+                          style={{ color: "var(--m-gold)" }}
+                        />
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
             )}
 

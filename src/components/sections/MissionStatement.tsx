@@ -61,7 +61,7 @@ export default function MissionStatement() {
             className="mt-3 text-sm font-light leading-relaxed md:text-base"
             style={{ color: "var(--ink-muted)" }}
           >
-            As a proud L&apos;Oréal Professionnel partner, we use only the finest professional-grade
+            We use only the finest professional-grade
             products and techniques to deliver transformative results.
           </p>
           <p

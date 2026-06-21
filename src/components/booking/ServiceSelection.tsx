@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Clock, Check, ChevronDown, ChevronUp, ShoppingBag, X, Trash2, User } from "lucide-react";
+import { Search, Clock, Check, ChevronDown, ChevronUp, ShoppingBag, X, Trash2, User, Filter } from "lucide-react";
 import { useServices, useBarbers, useSlots, useStaffAvailability } from "../../hooks/useBooking";
 import { Service, Barber } from "../../types/booking";
 import ScissorsLoader from "../ui/ScissorsLoader";
@@ -115,6 +115,7 @@ export default function ServiceSelection({
 }: ServiceSelectionProps) {
   // ── All useState/useRef hooks first (React rules of hooks) ──
   const [searchQuery, setSearchQuery] = useState("");
+  const [genderFilter, setGenderFilter] = useState("All");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("All");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -194,11 +195,21 @@ export default function ServiceSelection({
     return ids.size > 0;
   };
 
+  const dailyFirst = ["haircut", "beard", "shaving", "hair color", "haircolor", "color", "hair styling", "styling", "facial", "cleanup", "hair treatment", "treatment"];
+
   // Categories
   const categories = useMemo(() => {
     if (!services) return ["All"];
-    const tags = new Set(services.map((s) => s.tag || "Other"));
-    return ["All", ...Array.from(tags)];
+    const tags = Array.from(new Set(services.map((s) => s.tag || "Other")));
+    tags.sort((a, b) => {
+      const aIdx = dailyFirst.findIndex(p => a.toLowerCase().includes(p));
+      const bIdx = dailyFirst.findIndex(p => b.toLowerCase().includes(p));
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return ["All", ...tags];
   }, [services]);
 
   // Grouped services
@@ -212,6 +223,9 @@ export default function ServiceSelection({
           (s.tag || "Other").toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+    if (genderFilter !== "All") {
+      filtered = filtered.filter((s) => !s.gender || s.gender.toLowerCase() === genderFilter.toLowerCase() || s.gender.toLowerCase() === "unisex" || s.gender.toLowerCase() === "both");
+    }
     if (selectedCategoryFilter !== "All") {
       filtered = filtered.filter((s) => (s.tag || "Other") === selectedCategoryFilter);
     }
@@ -221,8 +235,20 @@ export default function ServiceSelection({
       if (!groups[tag]) groups[tag] = [];
       groups[tag].push(s);
     });
-    return groups;
-  }, [services, searchQuery, selectedCategoryFilter]);
+
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      const aIdx = dailyFirst.findIndex(p => a.toLowerCase().includes(p));
+      const bIdx = dailyFirst.findIndex(p => b.toLowerCase().includes(p));
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    const sorted: Record<string, Service[]> = {};
+    sortedKeys.forEach(k => { sorted[k] = groups[k]; });
+    return sorted;
+  }, [services, searchQuery, genderFilter, selectedCategoryFilter]);
 
   // Auto-expand first category
   useEffect(() => {
@@ -300,18 +326,40 @@ export default function ServiceSelection({
 
       {/* Sticky top bar */}
       <div className="sticky top-20 z-30 bg-[var(--bg)]/95 backdrop-blur-xl pt-3 pb-2 px-4 md:px-0 -mx-4 md:mx-0">
-        {/* Search */}
-        <div className="relative mb-2">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-[var(--text-subtle)]" />
+        {/* Search and Filters */}
+        <div className="flex flex-col md:flex-row gap-2 mb-2">
+          {/* Search */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-[var(--text-subtle)]" />
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder-gray-400 focus:bg-[var(--surface)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/20 transition-all duration-300 shadow-sm text-sm"
+              placeholder="Search services..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder-gray-400 focus:bg-[var(--surface)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/20 transition-all duration-300 shadow-sm text-sm"
-            placeholder="Search services..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          
+          {/* Gender Filter */}
+          <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar flex-shrink-0">
+            <div className="flex bg-[var(--surface)] border border-[var(--border)] rounded-xl p-1 shadow-sm h-[46px] items-center">
+              {["All", "Male", "Female"].map((gender) => (
+                <button
+                  key={gender}
+                  onClick={() => setGenderFilter(gender)}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 h-full flex items-center ${
+                    genderFilter === gender
+                      ? "bg-[var(--primary)] text-white shadow-sm"
+                      : "text-[var(--text-muted)] hover:bg-[rgba(139,0,0,0.05)]"
+                  }`}
+                >
+                  {gender}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Category chips */}
@@ -443,11 +491,21 @@ export default function ServiceSelection({
                                     <h4 className={`text-sm font-semibold truncate ${isSelected ? "text-[var(--primary)]" : "text-[var(--text)]"}`}>
                                       {service.name}
                                     </h4>
-                                    <div className="flex items-center text-xs text-[var(--text-muted)] mt-0.5 flex-wrap gap-x-3 gap-y-1">
+                                    <div className="flex items-center text-xs text-[var(--text-muted)] mt-1 flex-wrap gap-x-2 gap-y-1">
                                       <span className="flex items-center">
                                         <Clock className="w-2.5 h-2.5 mr-1 text-[var(--text-subtle)]" />
                                         {service.duration_minutes} min
                                       </span>
+                                      {service.tag && (
+                                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[rgba(139,0,0,0.05)] text-[var(--primary)]">
+                                          {service.tag}
+                                        </span>
+                                      )}
+                                      {service.gender && (
+                                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[rgba(0,0,0,0.05)] text-[var(--text-subtle)]">
+                                          {service.gender}
+                                        </span>
+                                      )}
                                       {isSelected && timelineItem && (
                                         <span className="font-medium text-[var(--primary)] bg-[rgba(139,0,0,0.1)] px-1.5 py-0.5 rounded">
                                           {timelineItem.formattedStartTime} to {timelineItem.formattedEndTime}
@@ -457,9 +515,12 @@ export default function ServiceSelection({
                                   </div>
 
                                   {/* Price */}
-                                  <div className="flex-shrink-0 ml-2 text-right">
-                                    <span className="font-bold text-sm text-[var(--text)]">
+                                  <div className="flex-shrink-0 ml-2 text-right flex flex-col justify-center">
+                                    <span className="font-bold text-sm text-[var(--text)] leading-none">
                                       {service.currency === 'INR' ? 'Rs. ' : service.currency}{parseFloat(service.price).toLocaleString()}
+                                    </span>
+                                    <span className="text-[9px] text-[var(--text-subtle)] uppercase tracking-wider mt-1 block">
+                                      on words
                                     </span>
                                   </div>
                                 </div>

@@ -18,10 +18,10 @@ export const useCalendarAvailability = (startDate: string, endDate: string) => {
   });
 };
 
-export const useSlots = (date: string) => {
+export const useSlots = (date: string, employeeId?: string) => {
   return useQuery({
-    queryKey: ['slots', date],
-    queryFn: () => getSlots(date),
+    queryKey: ['slots', date, employeeId],
+    queryFn: () => getSlots(date, employeeId),
     enabled: !!date,
     staleTime: 1000 * 60 * 2, // 2 minutes
     retry: 2,

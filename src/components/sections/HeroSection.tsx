@@ -36,7 +36,7 @@ export default function HeroSection() {
           className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.22em] md:hidden"
           style={{ color: "rgba(241,236,224,0.7)" }}
         >
-          Unisex &nbsp;·&nbsp; L&apos;Oréal Partner
+          Artistic Unisex salon
         </span>
 
         {/* Gold divider — mobile only */}
@@ -47,12 +47,12 @@ export default function HeroSection() {
 
         {/* Headline — mobile only (hidden on desktop) */}
         <h1
-          className="mt-3 text-center font-[family-name:var(--font-cormorant)] text-[3.8rem] font-semibold leading-[0.84] sm:text-7xl md:hidden"
+          className="mt-3 px-2 text-center font-[family-name:var(--font-cormorant)] text-[2.4rem] font-semibold leading-[1] sm:text-5xl md:hidden"
           style={{ color: "#F1ECE0", letterSpacing: "-0.01em" }}
         >
-          The <span className="italic" style={{ color: "#C8924A" }}>Art</span>
+          The <span className="italic" style={{ color: "#C8924A" }}>Story</span>
           <br />
-          of <span style={{ color: "#C8924A" }}>Hair</span>
+          of <span style={{ color: "#C8924A" }}>Limbachiya Brothers</span>
         </h1>
       </motion.div>
 
@@ -87,7 +87,7 @@ export default function HeroSection() {
           className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.22em]"
           style={{ color: "rgba(241,236,224,0.75)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
         >
-          Unisex &nbsp;·&nbsp; L&apos;Oréal Professionnel Partner
+          Artistic Unisex salon
         </span>
         <div
           className="mt-3 h-px w-16"
@@ -110,8 +110,8 @@ export default function HeroSection() {
             textShadow: "0 4px 30px rgba(0,0,0,0.6), 0 2px 10px rgba(0,0,0,0.4)",
           }}
         >
-          The <span className="italic" style={{ color: "#C8924A" }}>Art</span>{" "}
-          of <span style={{ color: "#C8924A" }}>Hair</span>
+          The <span className="italic" style={{ color: "#C8924A" }}>Story</span>{" "}
+          of <span style={{ color: "#C8924A" }}>Limbachiya Brothers</span>
         </h1>
       </motion.div>
 

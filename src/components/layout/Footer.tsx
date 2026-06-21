@@ -28,12 +28,6 @@ export default function Footer() {
             <span className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold" style={{ color: "var(--ink)" }}>
               LB The Hair Studio
             </span>
-            <span
-              className="mt-1 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em]"
-              style={{ color: "var(--m-gold)" }}
-            >
-              L&apos;Oréal Professionnel Partner
-            </span>
           </Link>
 
           {/* Hours & Contact */}

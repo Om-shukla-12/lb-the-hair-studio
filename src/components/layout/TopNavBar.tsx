@@ -39,12 +39,6 @@ export default function TopNavBar() {
               >
                 LB The Hair Studio
               </span>
-              <span
-                className="mt-0.5 block truncate font-[family-name:var(--font-raleway)] text-[7px] font-bold uppercase tracking-[0.14em] sm:text-[8px] md:text-[9px]"
-                style={{ color: "var(--m-gold)" }}
-              >
-                L&apos;Oréal Professionnel Partner
-              </span>
             </div>
           </Link>
 
