@@ -65,11 +65,11 @@ export default function HeroSection() {
 
       {/* Brothers photo — foreground */}
       <motion.div
-        style={{ y: modelsY }}
+        style={{ y: modelsY, filter: "drop-shadow(0 20px 45px rgba(0,0,0,0.5))" }}
         initial={{ opacity: 0, scale: 1.03 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, delay: 0.2, ease: easeOutExpo }}
-        className="absolute inset-x-0 bottom-0 z-20 flex justify-center"
+        className="absolute inset-x-0 bottom-0 top-[28%] z-20 flex items-end justify-center md:top-[10%]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -79,8 +79,7 @@ export default function HeroSection() {
             if (!el.src.endsWith("hero-models.png")) el.src = "/photos/hero-models.png";
           }}
           alt="Nipam & Anand Limbachiya — Founders of LB The Hair Studio"
-          className="h-auto w-full max-w-[600px] object-contain object-bottom"
-          style={{ filter: "drop-shadow(0 20px 45px rgba(0,0,0,0.5))" }}
+          className="h-full max-h-full w-auto max-w-full object-contain object-bottom md:max-w-[700px]"
         />
       </motion.div>
 
