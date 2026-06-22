@@ -78,12 +78,6 @@ export default function StylistGrid() {
                   >
                     {founder.name}
                   </h3>
-                  <p
-                    className="mt-1 font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.16em]"
-                    style={{ color: "#C8924A" }}
-                  >
-                    {founder.role}
-                  </p>
                 </div>
               </div>
               <div className="px-5 py-4 md:px-6 md:py-5" style={{ background: "var(--cream)" }}>
