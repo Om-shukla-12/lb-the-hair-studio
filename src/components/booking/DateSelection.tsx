@@ -232,7 +232,7 @@ export default function DateSelection({ selectedDate, onSelectDate, onNext }: Da
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className={`grid grid-cols-7 ${viewMode === 'week' ? 'gap-2' : 'gap-1'}`}
+            className={`grid ${viewMode === 'week' ? 'grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-7' : 'grid-cols-7 gap-1'}`}
           >
             {isLoading ? (
               <div className="col-span-7 flex justify-center py-10">
