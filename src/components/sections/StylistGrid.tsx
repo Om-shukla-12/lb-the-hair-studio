@@ -9,7 +9,6 @@ import { InstagramIcon } from "@/components/ui/InstagramIcon";
 const founders = [
   {
     name: "Nipam Limbachiya",
-    role: "Co-Founder",
     desc: "With a passion for precision and editorial craft, Nipam brings creative vision to every transformation at LB The Hair Studio.",
     src: "/photos/Nipam.png",
     instagram: "https://www.instagram.com/nipamlimbachiya/",
@@ -17,7 +16,6 @@ const founders = [
   },
   {
     name: "Anand Limbachiya",
-    role: "Co-Founder",
     desc: "Anand's dedication to client experience and premium grooming ensures every visit feels bespoke and effortlessly luxurious.",
     src: "/photos/Anand.png",
     instagram: "https://www.instagram.com/anand__limbachiya/",

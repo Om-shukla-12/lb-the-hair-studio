@@ -57,7 +57,7 @@ export default function ServiceCards() {
                 <div className="p-1.5" style={{ background: "var(--cream)" }}>
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
-                      src="/photos/hero-bg.jpg"
+                      src="/photos/studio.jpg"
                       alt="LB The Hair Studio interior"
                       fill
                       className="object-cover"
