@@ -11,13 +11,13 @@ export default function MissionStatement() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8 }}
-          className="relative h-[400px] overflow-hidden rounded-2xl md:h-[550px]"
+          className="relative aspect-[16/10] overflow-hidden rounded-2xl md:aspect-auto md:h-[480px]"
           style={{ border: "1px solid rgba(176,135,90,0.3)" }}
         >
           <img
             alt="Interior view of LB The Hair Studio"
             className="absolute inset-0 h-full w-full object-cover"
-            src="/photos/unnamed2.png"
+            src="/photos/studio.jpg"
           />
           <div
             className="pointer-events-none absolute inset-0"

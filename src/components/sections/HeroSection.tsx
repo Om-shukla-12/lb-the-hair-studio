@@ -11,52 +11,59 @@ export default function HeroSection() {
   return (
     <section
       className="relative isolate min-h-[65svh] overflow-hidden md:min-h-[90svh]"
-      style={{ background: "linear-gradient(160deg, #363B30 0%, #2C312A 55%, #262A23 100%)" }}
+      style={{ background: "linear-gradient(160deg, #2E2E2C 0%, #232321 55%, #1C1C1A 100%)" }}
       id="home"
     >
-      {/* Warm amber glow + subtle vignette on the olive backdrop */}
+      {/* Warm amber glow + subtle vignette */}
       <div
         className="absolute inset-0 z-0"
-        style={{ background: "radial-gradient(ellipse at 50% 42%, rgba(200,146,74,0.16), transparent 62%)" }}
+        style={{ background: "radial-gradient(ellipse at 50% 42%, rgba(200,146,74,0.10), transparent 62%)" }}
       />
       <div
         className="absolute inset-0 z-0"
-        style={{ background: "linear-gradient(180deg, rgba(38,42,35,0.55) 0%, rgba(38,42,35,0) 28%, rgba(38,42,35,0) 70%, rgba(38,42,35,0.45) 100%)" }}
+        style={{ background: "linear-gradient(180deg, rgba(28,28,26,0.6) 0%, rgba(28,28,26,0) 28%, rgba(28,28,26,0) 70%, rgba(28,28,26,0.5) 100%)" }}
       />
 
-      {/* Eyebrow + Headline stacked tightly together */}
+      {/* Mobile eyebrow — top, in front */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.25, ease: easeOutExpo }}
-        className="absolute inset-x-0 top-0 z-10 flex flex-col items-center px-6 pt-24 md:pt-28"
+        transition={{ duration: 0.9, delay: 0.25, ease: easeOutExpo }}
+        className="pointer-events-none absolute inset-x-0 top-0 z-40 flex flex-col items-center pt-24 md:hidden"
       >
-        {/* L'Oréal partner label — mobile only */}
         <span
-          className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.22em] md:hidden"
-          style={{ color: "rgba(241,236,224,0.7)" }}
+          className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.22em]"
+          style={{ color: "rgba(241,236,224,0.65)" }}
         >
-          Artistic Unisex salon
+          Artistic Unisex Salon
         </span>
-
-        {/* Gold divider — mobile only */}
         <div
-          className="mt-3 h-px w-16 md:hidden"
+          className="mt-3 h-px w-16"
           style={{ background: "linear-gradient(90deg, transparent, #C8924A, transparent)" }}
         />
+      </motion.div>
 
-        {/* Headline — mobile only (hidden on desktop) */}
+      {/* Mobile headline — bottom, in front of image */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.5, ease: easeOutExpo }}
+        className="pointer-events-none absolute inset-x-0 bottom-8 z-40 flex justify-center px-4 md:hidden"
+      >
         <h1
-          className="mt-3 px-2 text-center font-[family-name:var(--font-cormorant)] text-[2.4rem] font-semibold leading-[1] sm:text-5xl md:hidden"
-          style={{ color: "#F1ECE0", letterSpacing: "-0.01em" }}
+          className="text-center font-[family-name:var(--font-cormorant)] text-[2rem] font-semibold leading-[1.05] sm:text-4xl"
+          style={{
+            color: "#F1ECE0",
+            letterSpacing: "-0.01em",
+            textShadow: "0 3px 20px rgba(0,0,0,0.7), 0 1px 6px rgba(0,0,0,0.5)",
+          }}
         >
-          The <span className="italic" style={{ color: "#C8924A" }}>Story</span>
-          <br />
+          The <span className="italic" style={{ color: "#C8924A" }}>Story</span>{" "}
           of <span style={{ color: "#C8924A" }}>Limbachiya Brothers</span>
         </h1>
       </motion.div>
 
-      {/* Models — FOREGROUND transparent cutout */}
+      {/* Brothers photo — foreground */}
       <motion.div
         style={{ y: modelsY }}
         initial={{ opacity: 0, scale: 1.03 }}
@@ -66,17 +73,18 @@ export default function HeroSection() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/photos/hero-models.png"
+          src="/photos/Twobrothers.png"
           onError={(e) => {
             const el = e.currentTarget as HTMLImageElement;
-            if (!el.src.endsWith("lbimage.png")) el.src = "/photos/lbimage.png";
+            if (!el.src.endsWith("hero-models.png")) el.src = "/photos/hero-models.png";
           }}
-          alt="LB The Hair Studio — signature cuts and colour for men and women"
-          className="h-auto w-full max-w-[680px] object-contain object-bottom drop-shadow-[0_20px_45px_rgba(0,0,0,0.4)]"
+          alt="Nipam & Anand Limbachiya — Founders of LB The Hair Studio"
+          className="h-auto w-full max-w-[600px] object-contain object-bottom"
+          style={{ filter: "drop-shadow(0 20px 45px rgba(0,0,0,0.5))" }}
         />
       </motion.div>
 
-      {/* Desktop-only: L'Oréal label at top of hero */}
+      {/* Desktop eyebrow */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -85,9 +93,9 @@ export default function HeroSection() {
       >
         <span
           className="font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.22em]"
-          style={{ color: "rgba(241,236,224,0.75)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+          style={{ color: "rgba(241,236,224,0.7)", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
         >
-          Artistic Unisex salon
+          Artistic Unisex Salon
         </span>
         <div
           className="mt-3 h-px w-16"
@@ -95,7 +103,7 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Desktop-only headline — bottom anchored with text shadow for readability */}
+      {/* Desktop headline — bottom */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,11 +111,11 @@ export default function HeroSection() {
         className="pointer-events-none absolute inset-x-0 bottom-10 z-40 hidden md:flex md:justify-center md:px-6"
       >
         <h1
-          className="text-center font-[family-name:var(--font-cormorant)] text-8xl font-semibold leading-[0.84] lg:text-[7.5rem]"
+          className="text-center font-[family-name:var(--font-cormorant)] text-7xl font-semibold leading-[0.88] lg:text-8xl"
           style={{
             color: "#F1ECE0",
             letterSpacing: "-0.01em",
-            textShadow: "0 4px 30px rgba(0,0,0,0.6), 0 2px 10px rgba(0,0,0,0.4)",
+            textShadow: "0 4px 30px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5)",
           }}
         >
           The <span className="italic" style={{ color: "#C8924A" }}>Story</span>{" "}
@@ -130,7 +138,7 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Extended cream fade — seamless handoff */}
+      {/* Cream fade */}
       <div
         className="absolute inset-x-0 bottom-0 z-30 h-32 md:h-40"
         style={{ background: "linear-gradient(180deg, transparent 0%, rgba(245,239,232,0.4) 40%, var(--cream) 100%)" }}
