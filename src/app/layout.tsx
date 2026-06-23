@@ -30,7 +30,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "LB The Hair Studio | L'Oréal Partner Salon",
+  title: "LB The Hair Studio | Artistic Unisex Salon",
   description: "A Legacy of Luxury. LB The Hair Studio redefines the modern beauty experience as an exclusive L'Oréal Professionnel Partner Salon.",
 };
 
