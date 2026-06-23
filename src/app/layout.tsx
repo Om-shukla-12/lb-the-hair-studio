@@ -47,6 +47,15 @@ export default function RootLayout({
     >
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.addEventListener('unhandledrejection', function(event) {
+              if (event.reason && event.reason.name === 'AbortError' && event.reason.message.includes('play() request was interrupted by a call to pause')) {
+                event.preventDefault();
+              }
+            });
+          `
+        }} />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-on-background selection:bg-[#D4AF37]/25 selection:text-[#FFF7EA]">
         <QueryProvider>

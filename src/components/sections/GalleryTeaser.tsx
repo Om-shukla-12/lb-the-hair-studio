@@ -1,18 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import SectionMotif from "@/components/ui/SectionMotif";
-
-const galleryImages = [
-  { src: "/photos/unnamed2.png", alt: "Luxury styled hair transformation", label: "Balayage" },
-  { src: "/photos/unnamed3.png", alt: "Premium salon colour result", label: "Editorial" },
-  { src: "/photos/unnamed.png", alt: "Signature blowout styling", label: "Blowout" },
-  { src: "/photos/unnamed2.png", alt: "Couture colour transformation", label: "Colour" },
-  { src: "/photos/unnamed3.png", alt: "Precision cut and finish", label: "Styling" },
-];
+import Script from "next/script";
 
 export default function GalleryTeaser() {
   return (
@@ -31,52 +23,9 @@ export default function GalleryTeaser() {
           Masterpieces in Motion
         </motion.h2>
 
-        {/* Framed images */}
-        <div className="hide-scrollbar snap-x-mandatory -mx-5 flex gap-4 overflow-x-auto px-5 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
-          {galleryImages.slice(0, 5).map((img, i) => (
-            <motion.div
-              key={`${img.label}-${i}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="min-w-[55vw] flex-shrink-0 snap-start md:min-w-0"
-            >
-              {/* Gold mat frame */}
-              <div className="p-1.5" style={{ background: "var(--cream-soft)", border: "1px solid rgba(198,160,106,0.55)" }}>
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    sizes="(min-width: 768px) 30vw, 55vw"
-                    className="object-cover transition-transform duration-700 hover:scale-105"
-                  />
-                </div>
-              </div>
-              <div
-                className="mt-3 text-center font-[family-name:var(--font-raleway)] text-[11px] font-bold uppercase tracking-[0.14em]"
-                style={{ color: "var(--m-gold)" }}
-              >
-                {img.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Scroll indicator dots — mobile only */}
-        <div className="mt-4 flex items-center justify-center gap-1.5 md:hidden">
-          {galleryImages.slice(0, 5).map((_, i) => (
-            <div
-              key={i}
-              className="h-1.5 rounded-full"
-              style={{
-                width: i === 0 ? "16px" : "6px",
-                background: i === 0 ? "var(--m-gold)" : "var(--hairline-cream)",
-                transition: "all 0.3s ease",
-              }}
-            />
-          ))}
+        <div className="my-8 min-h-[400px]">
+          <div className="elfsight-app-f28fd4f0-bb16-4fb0-a435-d09ecb6224e9" data-elfsight-app-lazy></div>
+          <Script src="https://elfsightcdn.com/platform.js" strategy="lazyOnload" />
         </div>
 
         <motion.div
