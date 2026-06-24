@@ -68,10 +68,11 @@ export default function VisitUs() {
               </p>
             </div>
 
-            <div className="mt-4 flex items-center gap-2.5">
-              <Clock className="h-4 w-4 flex-shrink-0" style={{ color: "var(--m-gold-deep)" }} />
-              <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-                Mon – Sun: 10:00 AM – 9:00 PM
+            <div className="mt-4 flex items-start gap-2.5">
+              <Clock className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: "var(--m-gold-deep)" }} />
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--ink-muted)" }}>
+                Mon – Sun: 10:00 AM – 11:30 PM<br />
+                (Closed on Tuesdays)
               </p>
             </div>
 

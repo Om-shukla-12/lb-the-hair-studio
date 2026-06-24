@@ -25,10 +25,22 @@ export default function ServiceCards() {
     return groups;
   }, [services]);
 
-  const displayCategories = useMemo(() => Object.keys(groupedServices).slice(0, 6), [groupedServices]);
+  const displayCategories = useMemo(() => {
+    const keys = Object.keys(groupedServices);
+    keys.sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      const isAHaircut = aLower.includes("hair cut") || aLower.includes("haircut");
+      const isBHaircut = bLower.includes("hair cut") || bLower.includes("haircut");
+      if (isAHaircut && !isBHaircut) return -1;
+      if (!isAHaircut && isBHaircut) return 1;
+      return 0;
+    });
+    return keys.slice(0, 6);
+  }, [groupedServices]);
 
   return (
-    <section className="maison-cream-soft px-5 pb-20 pt-10 md:px-8 md:pb-16 md:pt-14" id="services">
+    <section className="maison-cream-soft px-5 pb-8 pt-10 md:px-8 md:pb-16 md:pt-14" id="services">
       <div className="mx-auto max-w-6xl">
         <SectionMotif label="Services" tone="cream" />
 
@@ -91,6 +103,10 @@ export default function ServiceCards() {
               <div className="flex items-center justify-center py-12">
                 <ScissorsLoader message="Loading services..." />
               </div>
+            ) : displayCategories.length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="font-[family-name:var(--font-raleway)] text-sm font-semibold uppercase tracking-widest text-center" style={{ color: "var(--ink-subtle)" }}>No services found</p>
+              </div>
             ) : (
               <div className="flex flex-col">
                 {displayCategories.map((category, index) => {
@@ -147,7 +163,7 @@ export default function ServiceCards() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="mb-8 mt-16 pb-4 text-center md:mb-4 md:mt-16 md:text-left md:pl-3"
+              className="mb-2 mt-8 text-center md:mb-4 md:mt-16 md:pb-4 md:text-left md:pl-3"
             >
               <Link
                 href="/services"

@@ -37,7 +37,8 @@ export default function Footer() {
                 Hours
               </div>
               <div className="mt-1 text-[13px] font-light" style={{ color: "var(--ink-muted)" }}>
-                Mon – Sun: 10 AM – 9 PM
+                Mon – Sun: 10:00 AM – 11:30 PM<br />
+                (Closed on Tuesdays)
               </div>
             </div>
             <div className="h-8 w-px" style={{ background: "var(--hairline-cream)" }} />

@@ -74,10 +74,6 @@ export default function HeroSection() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/photos/Twobrothers.png"
-          onError={(e) => {
-            const el = e.currentTarget as HTMLImageElement;
-            if (!el.src.endsWith("hero-models.png")) el.src = "/photos/hero-models.png";
-          }}
           alt="Nipam & Anand Limbachiya — Founders of LB The Hair Studio"
           className="h-full max-h-full w-auto max-w-full object-contain object-bottom md:max-w-[700px]"
         />
